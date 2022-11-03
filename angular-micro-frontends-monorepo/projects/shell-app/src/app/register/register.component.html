@@ -1,0 +1,103 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-10">
+      <form [formGroup]="signUpForm" (ngSubmit)="onRegister()">
+        <div class="form-outline mb-4">
+          <label class="form-label" for="firstNameAddressField"
+            >First name</label
+          >
+          <input
+            type="text"
+            id="firstNameAddressField"
+            class="form-control"
+            formControlName="firstName"
+          />
+          <span
+            class="help-block"
+            *ngIf="
+              !signUpForm.get('firstName')?.valid &&
+              signUpForm.get('firstName')?.touched
+            "
+            >Please enter a valid first name</span
+          >
+        </div>
+
+        <div class="form-outline mb-4">
+          <label class="form-label" for="lastNameAddressField">Last name</label>
+          <input
+            type="text"
+            id="lastNameAddressField"
+            class="form-control"
+            formControlName="lastName"
+          />
+          <span
+            class="help-block"
+            *ngIf="
+              !signUpForm.get('lastName')?.valid &&
+              signUpForm.get('lastName')?.touched
+            "
+            >Please enter a valid last name</span
+          >
+        </div>
+
+        <div class="form-outline mb-4">
+          <label class="form-label" for="emailAddressField"
+            >Email address</label
+          >
+          <input
+            type="email"
+            id="emailAddressField"
+            class="form-control"
+            formControlName="email"
+          />
+          <span
+            class="help-block"
+            *ngIf="
+              !signUpForm.get('email')?.valid &&
+              signUpForm.get('email')?.touched
+            "
+            >Please enter a valid email</span
+          >
+        </div>
+
+        <!-- Password input -->
+        <div class="form-outline mb-4">
+          <label class="form-label" for="passwordField">Password</label>
+          <input
+            type="password"
+            id="passwordField"
+            class="form-control"
+            formControlName="password"
+          />
+          <span
+            class="help-block"
+            *ngIf="
+              !signUpForm.get('password')?.valid &&
+              signUpForm.get('password')?.touched
+            "
+            >Please enter a valid password</span
+          >
+        </div>
+
+        <div class="row mb-4">
+          <div class="text-center">
+            <p>Already a member? <a routerLink="/login">Login</a></p>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary btn-block mb-4"
+          [disabled]="
+            !signUpForm.get('email')?.valid ||
+            !signUpForm.get('password')?.valid ||
+            !signUpForm.get('firstName')?.valid ||
+            !signUpForm.get('lastName')?.valid
+          "
+        >
+          Sign up
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

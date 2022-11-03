@@ -23,9 +23,13 @@
               "projects/books-app/src/assets"
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "projects/books-app/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -89,9 +93,7 @@
               "projects/books-app/src/favicon.ico",
               "projects/books-app/src/assets"
             ],
-            "styles": [
-              "projects/books-app/src/styles.css"
-            ],
+            "styles": ["projects/books-app/src/styles.css"],
             "scripts": []
           }
         }
@@ -117,9 +119,13 @@
               "projects/shell-app/src/assets"
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "projects/shell-app/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -183,9 +189,7 @@
               "projects/shell-app/src/favicon.ico",
               "projects/shell-app/src/assets"
             ],
-            "styles": [
-              "projects/shell-app/src/styles.css"
-            ],
+            "styles": ["projects/shell-app/src/styles.css"],
             "scripts": []
           }
         }

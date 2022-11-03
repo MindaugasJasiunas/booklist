@@ -1,0 +1,9 @@
+.items-inline {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+.active a {
+  font-weight: bold;
+  color: black;
+}

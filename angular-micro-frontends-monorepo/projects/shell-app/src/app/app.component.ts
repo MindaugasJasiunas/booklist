@@ -7,4 +7,12 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'shell-app';
+  currentYear: number = new Date().getFullYear();
+  companyTitle: string = 'Company, Inc';
+  appTitle: string = 'Booklist';
+
+  logout(){
+    console.log('logout');
+  }
+
 }
