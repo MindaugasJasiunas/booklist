@@ -1,0 +1,95 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">{{ title }}</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li
+        class="nav-item"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <a class="nav-link" routerLink="/"> Home </a>
+      </li>
+      <li
+        class="nav-item"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <a class="nav-link" routerLink="/books"> Books </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="justify-content-end items-inline">
+    <form class="items-inline my-2 my-lg-0">
+      <input
+        class="form-control mr-sm-2"
+        type="search"
+        placeholder="Search"
+        aria-label="Search"
+      />
+      <button
+        class="btn btn-outline-success my-2 my-sm-0"
+        type="submit"
+        data-toggle="tooltip"
+        data-placement="bottom"
+        title="Search"
+      >
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </form>
+    <ul class="navbar-nav mr-auto">
+      <li
+        class="nav-item"
+        data-toggle="tooltip"
+        data-placement="bottom"
+        title="My books"
+      >
+        <a class="nav-link" routerLink="/books/my-books/books">
+          <i class="fa-solid fa-book"></i>
+        </a>
+      </li>
+      <li
+        class="nav-item"
+        data-toggle="tooltip"
+        data-placement="bottom"
+        title="Wishlist"
+      >
+        <a class="nav-link" routerLink="/books/my-books/wishlist">
+          <i class="fa-solid fa-bookmark"></i>
+        </a>
+      </li>
+      <li
+        class="nav-item"
+        data-toggle="tooltip"
+        data-placement="bottom"
+        title="Login"
+      >
+        <a class="nav-link" routerLink="/login">
+          <i class="fa-solid fa-right-to-bracket"></i>
+        </a>
+      </li>
+      <li
+        class="nav-item"
+        data-toggle="tooltip"
+        data-placement="bottom"
+        title="Logout"
+      >
+        <a class="nav-link" (click)="logout.emit()">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
