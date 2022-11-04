@@ -1,0 +1,41 @@
+<h4>{{ isSearch ? "Search results" : "Books" }}</h4>
+
+<ng-container *ngIf="books$ | async as books; else noBooks">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Author</th>
+        <th scope="col">Title</th>
+        <th scope="col">Pages</th>
+        <th scope="col">Hard Top</th>
+        <th scope="col">E-book</th>
+        <th scope="col">ISBN</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let book of books; let currentIndex = index">
+        <th scope="row">{{ currentIndex + 1 }}</th>
+        <td>{{ book.author }}</td>
+        <td>{{ book.title }}</td>
+        <td>{{ book.pages }}</td>
+        <td>{{ book.isHardtop }}</td>
+        <td>{{ book.isEbook }}</td>
+        <td>{{ book.ISBN }}</td>
+        <td>
+          <button class="btn btn-primary" (click)="openBook(book.ISBN)">
+            Open
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>
+
+<ng-template #noBooks>
+  <ng-container *ngIf="isSearch">
+    Sorry there is no books matching your search criteria
+  </ng-container>
+  <ng-container *ngIf="!isSearch">Sorry there is no books</ng-container>
+</ng-template>

@@ -1,5 +1,5 @@
 <header>
-  <app-header (logout)="logout()" [title]="appTitle"></app-header>
+  <app-header (logout)="logout()" [title]="appTitle" (search)="searchBooks($event)"></app-header>
 </header>
 <main>
   <router-outlet></router-outlet>

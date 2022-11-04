@@ -1,0 +1,8 @@
+.buttons {
+  width: 50%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.buttons button {
+  width: 100%;
+}
