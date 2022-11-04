@@ -5,8 +5,8 @@ import('./bootstrap')
 	.catch(err => console.error(err));
 
 // remove console.logs when going into production
-if (environment.production) {
-  // redefine console.log to a function that does nothing
-  window.console.log = () => {};
-  enableProdMode();
-}
+// if (environment.production) {
+//   // redefine console.log to a function that does nothing
+//   window.console.log = () => {};
+//   enableProdMode();
+// }
