@@ -1,0 +1,12 @@
+<div class="container">
+  <div class="row">
+    <div class="col-10">
+      <app-books-view
+        [isSearch]="isSearch"
+        [books$]="books$"
+        (showBookInfo)="loadBook($event)"
+      >
+      </app-books-view>
+    </div>
+  </div>
+</div>
