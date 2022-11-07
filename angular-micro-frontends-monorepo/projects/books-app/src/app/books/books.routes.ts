@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 import { BookViewComponent } from './book-view/book-view.component';
 import { BooksComponent } from './books.component';
-import { MyBooksWishlistComponent } from './my-books-wishlist/my-books-wishlist.component';
-import { MyBooksComponent } from './my-books/my-books.component';
 
 export const BOOKS_ROUTES: Routes = [
   {
@@ -12,14 +10,27 @@ export const BOOKS_ROUTES: Routes = [
   },
   {
     path: `book/:ISBN`,
-    component: BookViewComponent,
+    component: BooksComponent,
   },
+  // instead of this routes - use re-same BooksComponent & based on URL - load stuff
+  // {
+  //   path: `book/:ISBN`,
+  //   component: BookViewComponent,
+  // },
+  // {
+  //   path: `my-books/books`,
+  //   component: MyBooksComponent,
+  // },
+  // {
+  //   path: `my-books/wishlist`,
+  //   component: MyBooksWishlistComponent,
+  // },
   {
     path: `my-books/books`,
-    component: MyBooksComponent,
+    component: BooksComponent,
   },
   {
     path: `my-books/wishlist`,
-    component: MyBooksWishlistComponent,
+    component: BooksComponent,
   },
 ];

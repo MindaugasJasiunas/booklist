@@ -13,7 +13,7 @@ export class BookService {
   searchBooksUrl: string = ''; //environment.searchBooksUrl;
 
   booksList$: Observable<Book[]> = of([
-    new Book(1, 'john doe', 'getBooks called title', 'adgssfg685153165', 701, true, false),
+    new Book(1, 'john doe', 'getBooks called title', 'adgssfg685153165', 701, true, false, 'https://t4.ftcdn.net/jpg/00/89/55/15/360_F_89551596_LdHAZRwz3i4EM4J0NHNHy2hEUYDfXc0j.jpg'),
     new Book(2, 'Bono', 'Surrender: 40 Songs, One Story', '0593663691', 240, false, true, 'https://townsquare.media/site/838/files/2022/10/attachment-bono-surrender-book.jpg'),
     new Book(3, 'Matthew Perry', 'Friends, Lovers, and the Big Terrible Thing: A Memoir', '1250866448', 701, true, false, 'https://m.media-amazon.com/images/I/413MbCa36bL.jpg'),
     new Book(4, 'Prince Harry The Duke of Sussex', 'Spare', '0593593804', 240, false, true, 'https://m.media-amazon.com/images/I/91Szm8FpdfL.jpg'),
@@ -30,6 +30,7 @@ export class BookService {
   constructor(private http: HttpClient) {}
 
   getBook(ISBN: string): Observable<Book | undefined> {
+    console.log(`[BookService] getBook(ISBN=${ISBN})`);
     // return this.http.get(this.getBookUrl).pipe();
     return this.booksList$.pipe(
       map((books: Book[]) => books.find(book => book.ISBN === ISBN))
@@ -37,13 +38,27 @@ export class BookService {
   }
 
   getBooks(page: number = 0, size: number = 10): Observable<Book[]> {
+    console.log(`[BookService] getBooks(page=${page}, size=${size})`);
     // return this.http.get(this.getBooksUrl).pipe();
     return this.booksList$;
   }
 
   searchBooks(searchText: string, sort?: string): Observable<Book[]> {
+    console.log(`[BookService] searchBooks(searchText=${searchText}, sort=${sort})`);
     // check if desc or asc - default asc
     // return this.http.get(this.searchBooksUrl);//.pipe();
+    return this.booksList$;
+  }
+
+  getMyBooks(page: number = 0, size: number = 10): Observable<Book[]>{
+    console.log(`[BookService] getMyBooks(page=${page}, size=${size})`);
+    // call for my books to backend with JWT, by which books will be found in DB & returned
+    return this.booksList$;
+  }
+
+  getMyWishlist(page: number = 0, size: number = 10): Observable<Book[]>{
+    console.log(`[BookService] getMyWishlist(page=${page}, size=${size})`);
+    // call for my wishlist to backend with JWT, by which books will be found in DB & returned
     return this.booksList$;
   }
 }

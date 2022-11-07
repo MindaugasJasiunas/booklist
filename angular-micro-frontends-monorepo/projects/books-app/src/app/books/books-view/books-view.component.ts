@@ -9,14 +9,15 @@ import { Observable } from 'rxjs';
 })
 export class BooksViewComponent implements OnInit {
   @Input() books$!: Observable<Book[] | null>;
-  @Input() isSearch!: boolean;
+  @Input() titleText!: string;
+  @Input() noResultsText!: string;
   @Output() showBookInfo = new EventEmitter<string>();
 
   constructor() {}
 
   ngOnInit(): void {}
 
-  openBook(ISBN: string) {
+  onOpenBook(ISBN: string) {
     this.showBookInfo.emit(ISBN);
   }
 }

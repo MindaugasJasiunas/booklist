@@ -1,12 +1,25 @@
 <div class="container">
-  <div class="row">
+  <div class="row justify-content-center">
     <div class="col-10">
-      <app-books-view
-        [isSearch]="isSearch"
-        [books$]="books$"
-        (showBookInfo)="loadBook($event)"
-      >
-      </app-books-view>
+      <ng-container *ngIf="booksView">
+        <app-books-view
+          [titleText]="titleText"
+          [noResultsText]="noResultsText"
+          [books$]="books$"
+          (showBookInfo)="viewBook($event)"
+        >
+        </app-books-view>
+      </ng-container>
+
+      <ng-container *ngIf="!booksView">
+        <app-book-view
+          [book$]="book$"
+          (addToMyBooks)="onAddToMyBooks($event)"
+          (removeFromMyBooks)="onRemoveFromMyBooks($event)"
+          (addToWishlist)="onAddToWishlist($event)"
+          (removeFromWishlist)="onRemoveFromWishlist($event)"
+        ></app-book-view>
+      </ng-container>
     </div>
   </div>
 </div>
