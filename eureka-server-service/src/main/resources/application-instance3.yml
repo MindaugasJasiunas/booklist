@@ -1,0 +1,19 @@
+server:
+  port: 8763
+spring:
+  application:
+    name: eureka-service
+
+#in some cases preferable to advertise IP address instead of host name (avoid issues with hostname) - if running from docker-compose with Spring Cloud Gateway - it's a MUST
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: localhost3
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka, http://localhost2:8762/eureka, http://localhost3:8763/eureka
+    #Eureka by default runs with cluster (eureka not gonna register thinking its in a cluster of eureka servers ,eureka will not fetch registry from other Eureka servers) - locally we dont need it
+    register-with-eureka: true
+    fetch-registry: false
