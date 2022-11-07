@@ -7,3 +7,10 @@ spring:
       database: booksdb
       username: root
       password: rootroot
+logging:
+  level:
+    com:
+      example:
+        demo: debug
+server:
+  port: 8081
