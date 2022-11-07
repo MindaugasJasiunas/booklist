@@ -1,9 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Book } from 'projects/books-app/src/model/book.model';
 import { Observable } from 'rxjs';
 
 @Component({
+  standalone: true,
   selector: 'app-books-view',
+  imports: [CommonModule],
   templateUrl: './books-view.component.html',
   styleUrls: ['./books-view.component.css'],
 })

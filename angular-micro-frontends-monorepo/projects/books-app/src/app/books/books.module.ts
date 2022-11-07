@@ -9,9 +9,7 @@ import { BookViewComponent } from './book-view/book-view.component';
 @NgModule({
   declarations: [
     BooksComponent,
-    BooksViewComponent,
-    BookViewComponent,
   ],
-  imports: [CommonModule, RouterModule, RouterModule.forChild(BOOKS_ROUTES)],
+  imports: [CommonModule, RouterModule, RouterModule.forChild(BOOKS_ROUTES), BookViewComponent, BooksViewComponent],
 })
 export class BooksModule {}

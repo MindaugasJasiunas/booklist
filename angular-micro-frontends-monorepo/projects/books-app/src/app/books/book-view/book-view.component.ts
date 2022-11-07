@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Book } from 'projects/books-app/src/model/book.model';
@@ -5,7 +6,9 @@ import { filter, map, Observable, switchMap, tap } from 'rxjs';
 import { BookService } from '../../book.service';
 
 @Component({
+  standalone: true,
   selector: 'app-book-view',
+  imports: [CommonModule],
   templateUrl: './book-view.component.html',
   styleUrls: ['./book-view.component.css'],
 })
