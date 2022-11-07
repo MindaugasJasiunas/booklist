@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://root:rootroot@0.0.0.0:27017/books-mongodb?authSource=admin&retryWrites=true&w=majority
+      authentication-database: admin
+      database: booksdb
+      username: root
+      password: rootroot
