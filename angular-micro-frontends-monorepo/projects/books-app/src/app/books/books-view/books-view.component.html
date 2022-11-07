@@ -1,4 +1,4 @@
-<h4>{{ isSearch ? "Search results" : "Books" }}</h4>
+<h4>{{ titleText }}</h4>
 
 <ng-container *ngIf="books$ | async as books; else noBooks">
   <table class="table table-striped">
@@ -8,8 +8,7 @@
         <th scope="col">Author</th>
         <th scope="col">Title</th>
         <th scope="col">Pages</th>
-        <th scope="col">Hard Top</th>
-        <th scope="col">E-book</th>
+        <th scope="col">Book Type</th>
         <th scope="col">ISBN</th>
         <th scope="col">Actions</th>
       </tr>
@@ -20,22 +19,41 @@
         <td>{{ book.author }}</td>
         <td>{{ book.title }}</td>
         <td>{{ book.pages }}</td>
-        <td>{{ book.isHardtop }}</td>
-        <td>{{ book.isEbook }}</td>
+        <td>
+          <div *ngIf="book.isHardtop; else ebook">
+            <i class="fa-solid fa-book" data-toggle="tooltip" data-placement="bottom" title="hardtop book"></i>
+          </div>
+          <ng-template #ebook>
+            <i class="fa-solid fa-tablet-screen-button" data-toggle="tooltip" data-placement="bottom" title="ebook"></i>
+          </ng-template>
+        </td>
         <td>{{ book.ISBN }}</td>
         <td>
-          <button class="btn btn-primary" (click)="openBook(book.ISBN)">
+          <button class="btn btn-primary" (click)="onOpenBook(book.ISBN)">
             Open
           </button>
+          <br/>
         </td>
       </tr>
     </tbody>
   </table>
+
+  <div class="d-flex flex-row justify-content-end p-1" style="display: inline-block">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+      </ul>
+    </nav>
+  </div>
+
 </ng-container>
 
 <ng-template #noBooks>
-  <ng-container *ngIf="isSearch">
-    Sorry there is no books matching your search criteria
+  <ng-container>
+    {{ noResultsText }}
   </ng-container>
-  <ng-container *ngIf="!isSearch">Sorry there is no books</ng-container>
 </ng-template>
