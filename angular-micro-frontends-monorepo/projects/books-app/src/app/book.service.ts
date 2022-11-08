@@ -8,9 +8,9 @@ import { environment } from '../environments/environment';
   providedIn: 'root',
 })
 export class BookService {
-  getBookUrl: string = 'http://localhost:9090/api/v1/books'; //environment.getBookUrl;
-  getBooksUrl: string = 'http://localhost:9090/api/v1/books/'; //environment.getBooksUrl;
-  searchBooksUrl: string = 'http://localhost:9090/api/v1/books?search='; //environment.searchBooksUrl;
+  getBookUrl: string = environment.getBookUrl;
+  getBooksUrl: string = environment.getBooksUrl;
+  searchBooksUrl: string = environment.searchBooksUrl;
 
   constructor(private http: HttpClient) {}
 
