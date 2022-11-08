@@ -47,6 +47,11 @@ public class BookHandler {
         if(request.queryParam("sort").isPresent()){
             sortFieldName = request.queryParam("sort").get();
         }
+
+        if(request.queryParam("search").isPresent()){
+            return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromPublisher(service.getBooks(PageRequest.of(page, size).withSort(Sort.by(sortFieldName).descending()), request.queryParam("search").get()), new ParameterizedTypeReference<Page<Book>>(){}));
+        }
+
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromPublisher(service.getBooks(PageRequest.of(page, size).withSort(Sort.by(sortFieldName).descending())), new ParameterizedTypeReference<Page<Book>>(){}));
     }
 }

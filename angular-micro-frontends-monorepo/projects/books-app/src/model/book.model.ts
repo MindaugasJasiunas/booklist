@@ -1,5 +1,5 @@
 export class Book{
-  constructor(private id: number, private _author: string, private _title: string, private _ISBN: string, private _pages: number, private _hardtop: boolean, private _ebook: boolean, private _image?: string){}
+  constructor(private id: string | undefined, private _author: string, private _title: string, private _ISBN: string, private _pages: number, private _hardtop: boolean, private _ebook: boolean, private _image?: string){}
 
   get author(){
     return this._author;
