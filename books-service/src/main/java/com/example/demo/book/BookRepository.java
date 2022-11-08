@@ -13,6 +13,8 @@ public interface BookRepository extends ReactiveMongoRepository<Book, String> {
 
     Mono<Book> findByISBN(String ISBN);
 
+    Mono<Void> deleteByISBN(String ISBN);
+
 //    @Query("""
 //            db.books.find(
 //                {$or:[

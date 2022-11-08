@@ -17,6 +17,10 @@ public class BookRoutesV1Config {
         return RouterFunctions.route()
                 .GET("api/v1/books", accept(APPLICATION_JSON), handler::getBooks)
                 .GET("api/v1/books/{ISBN}", accept(APPLICATION_JSON), handler::getBookByISBN)
+                .POST("api/v1/books", accept(APPLICATION_JSON), handler::createBook)
+                .PUT("api/v1/books/{ISBN}", accept(APPLICATION_JSON), handler::updateBookByISBN)
+                .PATCH("api/v1/books/{ISBN}", accept(APPLICATION_JSON), handler::patchBookByISBN)
+                .DELETE("api/v1/books/{ISBN}", accept(APPLICATION_JSON), handler::deleteBookByISBN)
                 .build();
     }
 }
