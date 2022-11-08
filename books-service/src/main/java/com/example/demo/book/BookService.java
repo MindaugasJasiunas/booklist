@@ -7,4 +7,5 @@ import reactor.core.publisher.Mono;
 public interface BookService {
     Mono<Book> getBook(String isbn);
     Mono<Page<Book>> getBooks(PageRequest pageRequest);
+    Mono<Page<Book>> getBooks(PageRequest pageRequest, String searchText);
 }
