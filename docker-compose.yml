@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  mongoDB:
+    image: mongo
+    container_name: books-mongodb
+    ports:
+      - 27017:27017
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: booksdb
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootroot
+
+  eureka1:
+    image: mindaugasjasiunas/eureka
+    container_name: eureka-1
+    ports:
+      - 8761:8761
+    restart: always
+    environment:
+      spring.application.name: eureka-service
+      server.port: 8761
+      eureka.instance.hostname: eureka1
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8762/eureka, http://eureka3:8763/eureka
+  eureka2:
+    image: mindaugasjasiunas/eureka
+    container_name: eureka-2
+    ports:
+      - 8762:8762
+    restart: always
+    environment:
+      spring.application.name: eureka-service
+      server.port: 8762
+      eureka.instance.hostname: eureka2
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8762/eureka, http://eureka3:8763/eureka
+  eureka3:
+    image: mindaugasjasiunas/eureka
+    container_name: eureka-3
+    ports:
+      - 8763:8763
+    restart: always
+    environment:
+      spring.application.name: eureka-service
+      server.port: 8763
+      eureka.instance.hostname: eureka3
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8762/eureka, http://eureka3:8763/eureka
