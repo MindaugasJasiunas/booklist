@@ -8,12 +8,16 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,4 +58,44 @@ public class BookHandler {
 
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromPublisher(service.getBooks(PageRequest.of(page, size).withSort(Sort.by(sortFieldName).descending())), new ParameterizedTypeReference<Page<Book>>(){}));
     }
+
+
+
+    public Mono<ServerResponse> createBook(ServerRequest request){
+        System.out.println("createBook()");
+        return request.bodyToMono(Book.class)
+                .flatMap(service::createBook)
+                .flatMap(createdBook -> ServerResponse.created(URI.create("http://localhost:9090/api/v1/books/" + createdBook.getISBN())).build())
+                .switchIfEmpty(ServerResponse.badRequest().build())
+                .onErrorResume(throwable -> Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage())));
+    }
+
+    public Mono<ServerResponse> updateBookByISBN(ServerRequest request){
+        System.out.println("updateBookByISBN()");
+        String isbn = request.pathVariable("ISBN");
+        return request.bodyToMono(Book.class)
+                .flatMap(bookToSave -> service.updateBook(bookToSave, isbn))
+                .flatMap(savedBook -> ServerResponse.noContent().build())
+                .switchIfEmpty(ServerResponse.badRequest().build())
+                .onErrorResume(throwable -> Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage())));
+    }
+
+    public Mono<ServerResponse> patchBookByISBN(ServerRequest request){
+        System.out.println("patchBookByISBN()");
+        String isbn = request.pathVariable("ISBN");
+        return request.bodyToMono(Book.class)
+                .flatMap(bookToSave -> service.patchBook(bookToSave, isbn))
+                .flatMap(savedUser -> ServerResponse.noContent().build())
+                .switchIfEmpty(ServerResponse.badRequest().build())
+                .onErrorResume(throwable -> Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage())));
+    }
+
+    public Mono<ServerResponse> deleteBookByISBN(ServerRequest request){
+        System.out.println("deleteBookByISBN()");
+        String isbn = request.pathVariable("ISBN");
+        return service.deleteBook(isbn)
+                .flatMap(unused -> ServerResponse.noContent().build())
+                .switchIfEmpty(ServerResponse.noContent().build());
+    }
+
 }
