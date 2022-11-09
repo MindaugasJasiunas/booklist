@@ -85,7 +85,7 @@ export class BooksComponent {
           case 'books': return this.service.getBooks(page, size);
           case 'my-books': return this.service.getMyBooks(page, size);
           case 'wishlist': return this.service.getMyWishlist(page, size);
-          case 'books-search': return this.service.searchBooks(search!, order);
+          case 'books-search': return this.service.searchBooks(page, size, search!, order);
           default: return this.service.getBooks(page, size);
         }
       })
