@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Book } from 'projects/books-app/src/model/book.model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -14,7 +14,8 @@ export class BooksViewComponent {
   @Input() books$!: Observable<Book[] | null>;
   @Input() titleText!: string;
   @Input() noResultsText!: string;
-  @Input() currentPage$!: Observable<number>;
+  @Input() currentPage$!: BehaviorSubject<number>;
+  @Input() perPage$!: BehaviorSubject<number>;
   @Output() showBookInfo = new EventEmitter<string>();
   @Output() prevPage = new EventEmitter<null>();
   @Output() nextPage = new EventEmitter<null>();

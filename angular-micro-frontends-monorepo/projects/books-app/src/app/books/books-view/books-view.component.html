@@ -15,7 +15,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let book of data.books; let currentIndex = index">
-        <th scope="row">{{ currentIndex + 1 }}</th>
+        <th scope="row">{{ (currentIndex + 1) + (data.currentPage.value! * (perPage$| async)!) }}</th>
         <td>{{ book.author }}</td>
         <td>{{ book.title }}</td>
         <td>{{ book.pages }}</td>
