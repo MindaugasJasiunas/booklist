@@ -18,8 +18,16 @@ export class BooksComponent {
   booksView = true;
   currentPage$ = new BehaviorSubject(0);
   itemsPerPage$ = new BehaviorSubject(10);
+  totalPages$!: Observable<number>;
 
   constructor(private route: ActivatedRoute, private service: BookService, private cdr: ChangeDetectorRef, private router: Router) {
+
+    this.totalPages$ = combineLatest([service.totalBooks, this.itemsPerPage$]).pipe(
+      switchMap(([booksTotal, booksPerPage]) => {
+        console.log('books: '+booksTotal+' ,booksPerPage:'+booksPerPage+' ,pages total:'+ Math.ceil(booksTotal/booksPerPage));
+        return of(Math.ceil(booksTotal/booksPerPage));
+      }
+    ));
 
     if(router.url.includes('/books/book/')) {
       this.booksView = false;

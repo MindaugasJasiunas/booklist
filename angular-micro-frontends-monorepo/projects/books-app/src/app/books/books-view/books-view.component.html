@@ -1,6 +1,6 @@
 <h4>{{ titleText }}</h4>
 
-<ng-container *ngIf="{ books: books$ | async, currentPage: {value: currentPage$ | async}} as data; else noBooks">
+<ng-container *ngIf="{ books: books$ | async, currentPage: {value: currentPage$ | async}, totalPages: totalPages$ | async} as data; else noBooks">
   <table class="table table-striped">
     <thead>
       <tr>
@@ -44,9 +44,10 @@
         <li class="page-item"><a class="page-link" (click)="this.prevPage.emit()" [ngClass]="{'disabled' : data.currentPage.value == 0}">Previous</a></li>
         <li class="page-item"><a class="page-link" (click)="this.prevPage.emit()" *ngIf="data.currentPage.value != 0">{{data.currentPage.value}}</a></li>
         <li class="page-item"><a class="page-link">{{(data.currentPage.value)! + 1}}</a></li>
-        <li class="page-item"><a class="page-link" (click)="this.nextPage.emit()">{{(data.currentPage.value)! + 2}}</a></li>
-        <li class="page-item"><a class="page-link" (click)="this.nextPage.emit()">Next</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.nextPage.emit()" *ngIf="data.currentPage.value!+1 < data.totalPages!">{{(data.currentPage.value)! + 2}}</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.nextPage.emit()" [ngClass]="{'disabled' : data.totalPages == (data.currentPage.value!+1)}">Next</a></li>
       </ul>
+      {{'totalPages: '+data.totalPages}}
       <ul class="pagination">
         Items per page
         <li class="page-item"><a class="page-link" (click)="this.perPage.emit(5)">5</a></li>

@@ -16,6 +16,7 @@ export class BooksViewComponent {
   @Input() noResultsText!: string;
   @Input() currentPage$!: BehaviorSubject<number>;
   @Input() perPage$!: BehaviorSubject<number>;
+  @Input() totalPages$!: Observable<number>;
   @Output() showBookInfo = new EventEmitter<string>();
   @Output() prevPage = new EventEmitter<null>();
   @Output() nextPage = new EventEmitter<null>();
