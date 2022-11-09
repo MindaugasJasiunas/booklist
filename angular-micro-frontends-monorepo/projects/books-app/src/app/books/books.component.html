@@ -7,6 +7,10 @@
           [noResultsText]="noResultsText"
           [books$]="books$"
           (showBookInfo)="viewBook($event)"
+          (nextPage)="nextPage()"
+          (prevPage)="prevPage()"
+          (perPage)="setPerPage($event)"
+          [currentPage$]="currentPage$"
         >
         </app-books-view>
       </ng-container>

@@ -28,7 +28,7 @@ export class BookService {
   getBooks(page: number = 0, size: number = 10): Observable<Book[]> {
     console.log(`[BookService] getBooks(page=${page}, size=${size})`);
 
-    return this.http.get(this.getBooksUrl).pipe(
+    return this.http.get(this.getBooksUrl, {params:{page:page, size:size}}).pipe(
       retry(5),
       map(response => (response as BooksResponse).content),
       map((content: []) => content.map(obj => { // map each element & return array to other map

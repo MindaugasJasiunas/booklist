@@ -10,17 +10,29 @@ import { Observable } from 'rxjs';
   templateUrl: './books-view.component.html',
   styleUrls: ['./books-view.component.css'],
 })
-export class BooksViewComponent implements OnInit {
+export class BooksViewComponent {
   @Input() books$!: Observable<Book[] | null>;
   @Input() titleText!: string;
   @Input() noResultsText!: string;
+  @Input() currentPage$!: Observable<number>;
   @Output() showBookInfo = new EventEmitter<string>();
-
-  constructor() {}
-
-  ngOnInit(): void {}
+  @Output() prevPage = new EventEmitter<null>();
+  @Output() nextPage = new EventEmitter<null>();
+  @Output() perPage = new EventEmitter<number>();
 
   onOpenBook(ISBN: string) {
     this.showBookInfo.emit(ISBN);
+  }
+
+  loadPrev(){
+    this.prevPage.emit();
+  }
+
+  loadNext(){
+    this.nextPage.emit();
+  }
+
+  onPerPage(num: number){
+    this.perPage.emit(num);
   }
 }
