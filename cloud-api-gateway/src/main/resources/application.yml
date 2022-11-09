@@ -12,14 +12,38 @@ spring:
       routes[0]:
         id: books-service-get-books
         uri: lb://books-service/
-        predicates[0]: Path=/api/v1/books #/**
+        predicates[0]: Path=/api/v1/books
         predicates[1]: Method=GET
         filters[0]: RemoveRequestHeader=Cookie
       routes[1]:
         id: books-service-get-book
         uri: lb://books-service/
-        predicates[0]: Path=/api/v1/books/** #/**
+        predicates[0]: Path=/api/v1/books/**
         predicates[1]: Method=GET
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[2]:
+        id: books-service-create-book
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/books
+        predicates[1]: Method=POST
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[3]:
+        id: books-service-update-book
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/books/**
+        predicates[1]: Method=PUT
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[4]:
+        id: books-service-partially-update-book
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/books/**
+        predicates[1]: Method=PATCH
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[5]:
+        id: books-service-delete-book
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/books/**
+        predicates[1]: Method=DELETE
         filters[0]: RemoveRequestHeader=Cookie
 
 server:
