@@ -5,8 +5,12 @@
 export const environment = {
   production: false,
   getBookUrl: 'http://localhost:9090/api/v1/books',
-  getBooksUrl: 'http://localhost:9090/api/v1/books/',
+  getBooksUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
   searchBooksUrl: 'http://localhost:9090/api/v1/books?search=',
+  createBookUrl: 'http://localhost:9090/api/v1/books',
+  updateBookUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
+  partiallyUpdateBookUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
+  deleteBookUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
 };
 
 /*

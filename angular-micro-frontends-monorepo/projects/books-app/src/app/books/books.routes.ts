@@ -12,19 +12,6 @@ export const BOOKS_ROUTES: Routes = [
     path: `book/:ISBN`,
     component: BooksComponent,
   },
-  // instead of this routes - use re-same BooksComponent & based on URL - load stuff
-  // {
-  //   path: `book/:ISBN`,
-  //   component: BookViewComponent,
-  // },
-  // {
-  //   path: `my-books/books`,
-  //   component: MyBooksComponent,
-  // },
-  // {
-  //   path: `my-books/wishlist`,
-  //   component: MyBooksWishlistComponent,
-  // },
   {
     path: `my-books/books`,
     component: BooksComponent,
