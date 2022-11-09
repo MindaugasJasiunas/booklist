@@ -1,5 +1,6 @@
 package com.example.demo.book;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "books")
 public class Book {
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Id
     private String id;
     private String author;
