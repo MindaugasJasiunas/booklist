@@ -1,0 +1,30 @@
+spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://root:rootroot@0.0.0.0:27017/books-mongodb?authSource=admin&retryWrites=true&w=majority
+      authentication-database: admin
+      database: booksdb
+      username: root
+      password: rootroot
+  application:
+    name: users-service
+logging:
+  level:
+    com:
+      example:
+        demo: debug
+server:
+  port: 0 # random port will be assigned
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka, http://localhost2:8762/eureka, http://localhost3:8763/eureka
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secretKey: SuperLongAndVerySecureKey-[].~^+$&4
+  refreshTokenExpirationAfterMilliseconds: 86400000 # 1 day
+  accessTokenExpirationAfterMilliseconds: 420000 # 7 minutes
