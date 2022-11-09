@@ -1,6 +1,6 @@
 <h4>{{ titleText }}</h4>
 
-<ng-container *ngIf="books$ | async as books; else noBooks">
+<ng-container *ngIf="{ books: books$ | async, currentPage: {value: currentPage$ | async}} as data; else noBooks">
   <table class="table table-striped">
     <thead>
       <tr>
@@ -14,7 +14,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let book of books; let currentIndex = index">
+      <tr *ngFor="let book of data.books; let currentIndex = index">
         <th scope="row">{{ currentIndex + 1 }}</th>
         <td>{{ book.author }}</td>
         <td>{{ book.title }}</td>
@@ -40,20 +40,21 @@
 
   <div class="d-flex flex-row justify-content-end p-1" style="display: inline-block">
     <nav aria-label="Page navigation example">
-      <ul class="pagination" *ngIf="{ value: currentPage$ | async } as page">
-        <li class="page-item"><a class="page-link" (click)="loadPrev()">Previous</a></li>
-        <li class="page-item"><a class="page-link" (click)="loadPrev()" *ngIf="page.value! != 0">{{page.value}}</a></li>
-        <li class="page-item"><a class="page-link">{{(page.value)! + 1}}</a></li>
-        <li class="page-item"><a class="page-link" (click)="loadNext()">{{(page.value)! + 2}}</a></li>
-        <li class="page-item"><a class="page-link" (click)="loadNext()">Next</a></li>
+      <ul class="pagination">
+        <li class="page-item"><a class="page-link" (click)="this.prevPage.emit()" [ngClass]="{'disabled' : data.currentPage.value == 0}">Previous</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.prevPage.emit()" *ngIf="data.currentPage.value != 0">{{data.currentPage.value}}</a></li>
+        <li class="page-item"><a class="page-link">{{(data.currentPage.value)! + 1}}</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.nextPage.emit()">{{(data.currentPage.value)! + 2}}</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.nextPage.emit()">Next</a></li>
       </ul>
       <ul class="pagination">
         Items per page
-        <li class="page-item"><a class="page-link" (click)="onPerPage(5)">5</a></li>
-        <li class="page-item"><a class="page-link" (click)="onPerPage(10)">10</a></li>
-        <li class="page-item"><a class="page-link" (click)="onPerPage(25)">25</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.perPage.emit(5)">5</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.perPage.emit(10)">10</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.perPage.emit(25)">25</a></li>
       </ul>
     </nav>
+    <hr>
   </div>
 
 </ng-container>

@@ -23,16 +23,4 @@ export class BooksViewComponent {
   onOpenBook(ISBN: string) {
     this.showBookInfo.emit(ISBN);
   }
-
-  loadPrev(){
-    this.prevPage.emit();
-  }
-
-  loadNext(){
-    this.nextPage.emit();
-  }
-
-  onPerPage(num: number){
-    this.perPage.emit(num);
-  }
 }
