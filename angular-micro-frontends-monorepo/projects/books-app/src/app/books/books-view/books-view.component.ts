@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Book } from 'projects/books-app/src/model/book.model';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { PaginationComponent } from '../../pagination/pagination.component';
 
 @Component({
   standalone: true,
   selector: 'app-books-view',
-  imports: [CommonModule],
+  imports: [CommonModule, PaginationComponent],
   templateUrl: './books-view.component.html',
   styleUrls: ['./books-view.component.css'],
 })

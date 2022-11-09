@@ -24,7 +24,7 @@ export class BooksComponent {
 
     this.totalPages$ = combineLatest([service.totalBooks, this.itemsPerPage$]).pipe(
       switchMap(([booksTotal, booksPerPage]) => {
-        console.log('books: '+booksTotal+' ,booksPerPage:'+booksPerPage+' ,pages total:'+ Math.ceil(booksTotal/booksPerPage));
+        // console.log('books: '+booksTotal+' ,booksPerPage:'+booksPerPage+' ,pages total:'+ Math.ceil(booksTotal/booksPerPage));
         return of(Math.ceil(booksTotal/booksPerPage));
       }
     ));
