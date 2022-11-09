@@ -44,9 +44,9 @@ export class BookService {
     );
   }
 
-  searchBooks(searchText: string, sort?: string): Observable<Book[]> {
+  searchBooks(page: number = 0, size: number = 10, searchText: string, sort?: string): Observable<Book[]> {
     console.log(`[BookService] searchBooks(searchText=${searchText}, sort=${sort})`);
-    return this.http.get(this.searchBooksUrl+searchText).pipe(
+    return this.http.get(this.searchBooksUrl+searchText, {params:{page:page, size:size}}).pipe(
       tap(response => this.totalBooks.next((response as BooksResponse).totalElements)), // side effect to set total books
       map(response => (response as BooksResponse).content),
       map((content: []) => content.map(obj => {
