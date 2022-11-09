@@ -7,9 +7,13 @@ import { BOOKS_ROUTES } from './books.routes';
 import { BookViewComponent } from './book-view/book-view.component';
 
 @NgModule({
-  declarations: [
-    BooksComponent,
+  declarations: [BooksComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    RouterModule.forChild(BOOKS_ROUTES),
+    BookViewComponent,
+    BooksViewComponent,
   ],
-  imports: [CommonModule, RouterModule, RouterModule.forChild(BOOKS_ROUTES), BookViewComponent, BooksViewComponent],
 })
 export class BooksModule {}

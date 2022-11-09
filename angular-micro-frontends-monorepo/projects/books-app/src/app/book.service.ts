@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, EMPTY, filter, map, Observable, of, retry, tap } from 'rxjs';
+import { BehaviorSubject, catchError, EMPTY, filter, map, Observable, of, retry, tap } from 'rxjs';
 import { Book } from '../model/book.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
@@ -8,9 +8,10 @@ import { environment } from '../environments/environment';
   providedIn: 'root',
 })
 export class BookService {
-  getBookUrl: string = environment.getBookUrl;
-  getBooksUrl: string = environment.getBooksUrl;
-  searchBooksUrl: string = environment.searchBooksUrl;
+  private getBookUrl: string = environment.getBookUrl;
+  private getBooksUrl: string = environment.getBooksUrl;
+  private searchBooksUrl: string = environment.searchBooksUrl;
+  public totalBooks = new BehaviorSubject(0);
 
   constructor(private http: HttpClient) {}
 
@@ -28,8 +29,9 @@ export class BookService {
   getBooks(page: number = 0, size: number = 10): Observable<Book[]> {
     console.log(`[BookService] getBooks(page=${page}, size=${size})`);
 
-    return this.http.get(this.getBooksUrl).pipe(
+    return this.http.get(this.getBooksUrl, {params:{page:page, size:size}}).pipe(
       retry(5),
+      tap(response => this.totalBooks.next((response as BooksResponse).totalElements)), // side effect to set total books
       map(response => (response as BooksResponse).content),
       map((content: []) => content.map(obj => { // map each element & return array to other map
         const bookResponse = obj as BookResponse;
@@ -45,6 +47,7 @@ export class BookService {
   searchBooks(searchText: string, sort?: string): Observable<Book[]> {
     console.log(`[BookService] searchBooks(searchText=${searchText}, sort=${sort})`);
     return this.http.get(this.searchBooksUrl+searchText).pipe(
+      tap(response => this.totalBooks.next((response as BooksResponse).totalElements)), // side effect to set total books
       map(response => (response as BooksResponse).content),
       map((content: []) => content.map(obj => {
         const bookResponse = obj as BookResponse;

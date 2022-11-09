@@ -1,0 +1,20 @@
+<ng-container *ngIf="{ currentPage: {value: currentPage$ | async}, totalPages: totalPages$ | async} as data">
+  <div class="d-flex flex-row justify-content-end p-1" style="display: inline-block">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item"><a class="page-link" (click)="this.prevPage.emit()" [ngClass]="{'disabled' : data.currentPage.value == 0}">Previous</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.prevPage.emit()" *ngIf="data.currentPage.value != 0">{{data.currentPage.value}}</a></li>
+        <li class="page-item active"><a class="page-link">{{(data.currentPage.value)! + 1}}</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.nextPage.emit()" *ngIf="data.currentPage.value!+1 < data.totalPages!">{{(data.currentPage.value)! + 2}}</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.nextPage.emit()" [ngClass]="{'disabled' : data.totalPages == (data.currentPage.value!+1)}">Next</a></li>
+      </ul>
+      <ul class="pagination">
+        Items per page
+        <li class="page-item"><a class="page-link" (click)="this.perPage.emit(5)">5</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.perPage.emit(10)">10</a></li>
+        <li class="page-item"><a class="page-link" (click)="this.perPage.emit(25)">25</a></li>
+      </ul>
+    </nav>
+    <hr>
+  </div>
+</ng-container>

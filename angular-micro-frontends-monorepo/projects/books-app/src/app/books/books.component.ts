@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { filter, map, Observable, of, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, forkJoin, map, observable, Observable, of, switchMap, tap } from 'rxjs';
 import { Book } from '../../model/book.model';
 import { BookService } from '../book.service';
 
@@ -9,15 +9,25 @@ import { BookService } from '../book.service';
   templateUrl: './books.component.html',
   styles: [],
 })
-export class BooksComponent implements OnInit {
+export class BooksComponent {
   book$!: Observable<Book | undefined>;
   books$!: Observable<Book[] | null>;
   _titleText!: BookPageTitle;
   _noResultsText!: NoBookResultText;
   type: BookType = 'books';
   booksView = true;
+  currentPage$ = new BehaviorSubject(0);
+  itemsPerPage$ = new BehaviorSubject(10);
+  totalPages$!: Observable<number>;
 
   constructor(private route: ActivatedRoute, private service: BookService, private cdr: ChangeDetectorRef, private router: Router) {
+
+    this.totalPages$ = combineLatest([service.totalBooks, this.itemsPerPage$]).pipe(
+      switchMap(([booksTotal, booksPerPage]) => {
+        // console.log('books: '+booksTotal+' ,booksPerPage:'+booksPerPage+' ,pages total:'+ Math.ceil(booksTotal/booksPerPage));
+        return of(Math.ceil(booksTotal/booksPerPage));
+      }
+    ));
 
     if(router.url.includes('/books/book/')) {
       this.booksView = false;
@@ -61,23 +71,25 @@ export class BooksComponent implements OnInit {
             // setTimeout(()=>{this.isSearch=true;}, 0);
             // Or use macrotask (finished after every event loop)
             // Promise.resolve().then(()=> {this.isSearch=true;});
-            return this.loadBooks(undefined, undefined, queryParamObj.search, queryParamObj.order);
+            return this.loadBooks(queryParamObj.search, queryParamObj.order);
           }
         })
       );
     }
   }
 
-  ngOnInit(): void {}
-
-  loadBooks(page: number = 0, size: number = 10, search?: string, order?: string): Observable<Book[]> {
-    switch(this.type){
-      case 'books': return  this.service.getBooks(page, size);
-      case 'my-books': return this.service.getMyBooks(page, size);
-      case 'wishlist': return this.service.getMyWishlist(page, size);
-      case 'books-search': return this.service.searchBooks(search!, order);
-      default: return this.service.getBooks(page, size);
-    }
+  loadBooks(search?: string, order?: string): Observable<Book[]> {
+    return combineLatest([this.currentPage$, this.itemsPerPage$]).pipe(
+      switchMap(([page, size]) => {
+        switch(this.type){
+          case 'books': return this.service.getBooks(page, size);
+          case 'my-books': return this.service.getMyBooks(page, size);
+          case 'wishlist': return this.service.getMyWishlist(page, size);
+          case 'books-search': return this.service.searchBooks(search!, order);
+          default: return this.service.getBooks(page, size);
+        }
+      })
+    );
   }
 
   viewBook(ISBN: string){
@@ -98,6 +110,22 @@ export class BooksComponent implements OnInit {
   }
 
   onRemoveFromWishlist(isbn: string){
+  }
+
+  nextPage(){
+    this.currentPage$.next(+this.currentPage$.value+1);
+    this.loadBooks();
+  }
+
+  prevPage(){
+    if(this.currentPage$.value === 0) return;
+    this.currentPage$.next(this.currentPage$.value-1);
+    this.loadBooks();
+  }
+
+  setPerPage(numOfItems: number){
+    this.itemsPerPage$.next(numOfItems);
+    this.currentPage$.next(0);
   }
 
   get titleText(): BookPageTitle{

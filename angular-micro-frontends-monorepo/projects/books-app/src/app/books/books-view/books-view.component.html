@@ -1,6 +1,6 @@
 <h4>{{ titleText }}</h4>
 
-<ng-container *ngIf="books$ | async as books; else noBooks">
+<ng-container *ngIf="{ books: books$ | async, currentPage: {value: currentPage$ | async}, totalPages: totalPages$ | async} as data; else noBooks">
   <table class="table table-striped">
     <thead>
       <tr>
@@ -14,8 +14,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let book of books; let currentIndex = index">
-        <th scope="row">{{ currentIndex + 1 }}</th>
+      <tr *ngFor="let book of data.books; let currentIndex = index">
+        <th scope="row">{{ (currentIndex + 1) + (data.currentPage.value! * (perPage$| async)!) }}</th>
         <td>{{ book.author }}</td>
         <td>{{ book.title }}</td>
         <td>{{ book.pages }}</td>
@@ -38,17 +38,13 @@
     </tbody>
   </table>
 
-  <div class="d-flex flex-row justify-content-end p-1" style="display: inline-block">
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-      </ul>
-    </nav>
-  </div>
+  <pagination-component
+  [totalPages$]="totalPages$"
+  [currentPage$]="currentPage$"
+  (perPage)="this.perPage.emit($event)"
+  (prevPage)="this.prevPage.emit($event)"
+  (nextPage)="this.nextPage.emit($event)"
+  ></pagination-component>
 
 </ng-container>
 
