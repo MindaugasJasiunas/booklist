@@ -1,6 +1,6 @@
 package com.example.demo.user;
 
-import com.example.demo.security.AuthRequest;
+import com.example.demo.requests.AuthRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import reactor.core.publisher.Mono;
 
