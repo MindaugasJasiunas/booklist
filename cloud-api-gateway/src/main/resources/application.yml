@@ -45,6 +45,24 @@ spring:
         predicates[0]: Path=/api/v1/books/**
         predicates[1]: Method=DELETE
         filters[0]: RemoveRequestHeader=Cookie
+      routes[6]:
+        id: users-service-login
+        uri: lb://users-service/
+        predicates[0]: Path=/login
+        predicates[1]: Method=POST
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[7]:
+        id: users-service-register
+        uri: lb://users-service/
+        predicates[0]: Path=/register
+        predicates[1]: Method=POST
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[8]:
+        id: users-service-reset-access-token
+        uri: lb://users-service/
+        predicates[0]: Path=/resettoken
+        predicates[1]: Method=POST
+        filters[0]: RemoveRequestHeader=Cookie
 
 server:
   port: 9090  # port where all requests will be coming
