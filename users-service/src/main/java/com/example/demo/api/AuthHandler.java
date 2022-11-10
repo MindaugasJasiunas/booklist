@@ -1,6 +1,6 @@
-package com.example.demo.rest;
+package com.example.demo.api;
 
-import com.example.demo.security.AuthRequest;
+import com.example.demo.requests.AuthRequest;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.user.User;
 import com.example.demo.user.UserService;
@@ -10,7 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
