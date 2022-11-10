@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,10 +13,10 @@ export class AppComponent {
   companyTitle: string = 'Company, Inc';
   appTitle: string = 'Booklist';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private service: AuthService) {}
 
   logout() {
-    console.log('logout');
+    this.service.logout();
   }
 
   searchBooks(text: string) {
