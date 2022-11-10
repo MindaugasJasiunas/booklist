@@ -21,6 +21,8 @@ export class AuthInterceptor implements HttpInterceptor {
   // runs before request leaves
   intercept(request: HttpRequest< any>, next: HttpHandler): Observable< HttpEvent< any>> {
     if (
+      request.url.includes('/books') ||
+      request.url.includes('/books/book/**') ||
       request.url.includes(environment.loginUrl) ||
       request.url.includes(environment.registerUrl) ||
       request.url.includes(environment.resetAccessTokenUrl)
