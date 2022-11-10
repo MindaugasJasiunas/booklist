@@ -20,12 +20,14 @@ export class AuthInterceptor implements HttpInterceptor {
 
   // runs before request leaves
   intercept(request: HttpRequest< any>, next: HttpHandler): Observable< HttpEvent< any>> {
+    console.log('intercept filtering: '+request.url);
     if (
-      request.url.includes('/books') ||
-      request.url.includes('/books/book/**') ||
       request.url.includes(environment.loginUrl) ||
       request.url.includes(environment.registerUrl) ||
-      request.url.includes(environment.resetAccessTokenUrl)
+      request.url.includes(environment.resetAccessTokenUrl) ||
+      //dont intercept GET requests for book or books
+      request.url.includes(environment.getBookUrl) ||
+      request.url.includes(environment.getBooksUrl)
     ) {
       // pass request through
       return next.handle(request);
