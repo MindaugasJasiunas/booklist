@@ -68,6 +68,7 @@
             id="passwordField"
             class="form-control"
             formControlName="password"
+            autocomplete
           />
           <span
             class="help-block"
@@ -82,6 +83,9 @@
         <div class="row mb-4">
           <div class="text-center">
             <p>Already a member? <a routerLink="/login">Login</a></p>
+          </div>
+          <div class="alert alert-danger" role="alert" *ngIf="showError() != null">
+            {{showError()}}
           </div>
         </div>
 

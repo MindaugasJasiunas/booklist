@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
 import { MainPageComponent } from './main-page/main-page.component';
-import { RegisterComponent } from './register/register.component';
 import { loadRemoteModule } from '@angular-architects/module-federation';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
 
 const routes: Routes = [
-  { path: `login`, component: LoginComponent },
-  { path: `register`, component: RegisterComponent },
+  { component: LoginComponent, path: 'login' },
+  { component: RegisterComponent, path: 'register' },
   {
     path: `books`,
     loadChildren: () =>
@@ -20,7 +20,6 @@ const routes: Routes = [
         .then((m) => m.BooksModule)
         .catch((err) => console.log('ERROR:', err)),
   },
-
   { path: ``, component: MainPageComponent, pathMatch: 'full' },
   {
     path: '**',

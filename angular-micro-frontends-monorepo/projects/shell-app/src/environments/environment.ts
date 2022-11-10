@@ -3,7 +3,13 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  loginUrl: 'http://localhost:9090/login',
+  registerUrl: 'http://localhost:9090/register',
+  resetAccessTokenUrl: 'http://localhost:9090/resettoken',
+  getBookUrl: 'http://localhost:9090/api/v1/books',
+  getBooksUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
+  searchBooksUrl: 'http://localhost:9090/api/v1/books?search=',
 };
 
 /*
