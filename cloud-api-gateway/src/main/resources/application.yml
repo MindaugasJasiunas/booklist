@@ -26,24 +26,28 @@ spring:
         uri: lb://books-service/
         predicates[0]: Path=/api/v1/books
         predicates[1]: Method=POST
+        predicates[2]: Header=Authorization, Bearer (.*)
         filters[0]: RemoveRequestHeader=Cookie
       routes[3]:
         id: books-service-update-book
         uri: lb://books-service/
         predicates[0]: Path=/api/v1/books/**
         predicates[1]: Method=PUT
+        predicates[2]: Header=Authorization, Bearer (.*)
         filters[0]: RemoveRequestHeader=Cookie
       routes[4]:
         id: books-service-partially-update-book
         uri: lb://books-service/
         predicates[0]: Path=/api/v1/books/**
         predicates[1]: Method=PATCH
+        predicates[2]: Header=Authorization, Bearer (.*)
         filters[0]: RemoveRequestHeader=Cookie
       routes[5]:
         id: books-service-delete-book
         uri: lb://books-service/
         predicates[0]: Path=/api/v1/books/**
         predicates[1]: Method=DELETE
+        predicates[2]: Header=Authorization, Bearer (.*)
         filters[0]: RemoveRequestHeader=Cookie
       routes[6]:
         id: users-service-login
