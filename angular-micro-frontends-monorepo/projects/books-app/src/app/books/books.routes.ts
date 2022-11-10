@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from 'projects/shell-app/src/app/auth/guard/auth.guard';
+import { IsBooklisterGuard } from 'projects/shell-app/src/app/auth/guard/is-booklister.guard';
+import { LoggedInGuard } from 'projects/shell-app/src/app/auth/guard/logged-in.guard';
 import { BooksComponent } from './books.component';
 
 export const BOOKS_ROUTES: Routes = [
@@ -15,11 +16,11 @@ export const BOOKS_ROUTES: Routes = [
   {
     path: `my-books/books`,
     component: BooksComponent,
-    canActivate: [AuthGuard]
+    canActivate: [LoggedInGuard, IsBooklisterGuard],
   },
   {
     path: `my-books/wishlist`,
     component: BooksComponent,
-    canActivate: [AuthGuard]
+    canActivate: [LoggedInGuard, IsBooklisterGuard],
   },
 ];

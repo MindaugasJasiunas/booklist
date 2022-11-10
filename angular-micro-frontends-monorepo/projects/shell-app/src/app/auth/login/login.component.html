@@ -1,6 +1,12 @@
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-10">
+      <div class="alert alert-danger" role="alert" *ngIf="redirectErrorMsg$ | async as redirectErrorMessage">
+        {{redirectErrorMessage}}
+      </div>
+      <div class="alert alert-success" role="alert" *ngIf="redirectSuccessMsg$ | async as redirectSuccessMsg">
+        {{redirectSuccessMsg}}
+      </div>
       <form [formGroup]="signInForm" (ngSubmit)="onLogin()">
         <div class="form-outline mb-4">
           <label class="form-label" for="emailAddressField"
@@ -62,6 +68,10 @@
           <div class="col d-flex justify-content-center">
             <a href="#">Forgot password?</a>
           </div>
+        </div>
+
+        <div class="alert alert-danger" role="alert" *ngIf="showError() != null">
+          {{showError()}}
         </div>
 
         <button

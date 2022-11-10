@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'projects/shell-app/src/environments/environment';
-import { Observable } from 'rxjs';
+import { map, Observable, of, switchMap, tap } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
@@ -13,19 +13,23 @@ export class AuthService {
   private refreshAccessTokenUrl = environment.resetAccessTokenUrl;
   private jwtAccessToken: string | null = null;
   private jwtRefreshToken: string | null = null;
-  private loggedInUsername: string | null = null;
+  private loggedInUserEmail: string | null = null;
   private jwtHelper = new JwtHelperService();
 
   constructor(private http: HttpClient) {}
 
-  public login(loginRequest: {username: string; password: string}): Observable< HttpResponse<any>> {
-    return this.http.post< any>(this.loginUrl, loginRequest, {observe: 'response',});
+  public login(loginRequest: {email: string; password: string}): Observable< HttpResponse<any>> {
+    return this.http.post<any>(this.loginUrl, loginRequest, {observe: 'response'});
+  }
+
+  public register(registerRequest: {email: string; password: string, firstName: string, lastName: string}): Observable< HttpResponse<any>> {
+    return this.http.post<any>(this.registerUrl, registerRequest, {observe: 'response'});
   }
 
   public logout(): void {
     this.jwtRefreshToken = null;
     this.jwtAccessToken = null;
-    this.loggedInUsername = null;
+    this.loggedInUserEmail = null;
 
     // remove items from localStorage - token, user information
     localStorage.removeItem('user');
@@ -51,12 +55,12 @@ export class AuthService {
     localStorage.setItem('accessToken', accessToken);
   }
 
-  public addUsernameToLocalCache(username: string): void {
-    this.loggedInUsername = username;
-    localStorage.setItem('user', JSON.stringify(username));
+  public addEmailToLocalCache(email: string): void {
+    this.loggedInUserEmail = email;
+    localStorage.setItem('user', JSON.stringify(email));
   }
 
-  public getUsernameFromLocalCache(): string {
+  public getEmailFromLocalCache(): string {
     return JSON.parse(localStorage.getItem('user')!);
   }
 
@@ -76,7 +80,7 @@ export class AuthService {
     if (this.jwtRefreshToken != null && this.jwtRefreshToken !== '') {
       if (this.jwtHelper.decodeToken(this.jwtRefreshToken).sub != null || '') {
         if (!this.jwtHelper.isTokenExpired(this.jwtRefreshToken)) {
-          this.addUsernameToLocalCache(this.jwtHelper.decodeToken(this.jwtRefreshToken).sub);
+          this.addEmailToLocalCache(this.jwtHelper.decodeToken(this.jwtRefreshToken).sub);
           return true;
         }
       }
@@ -90,4 +94,31 @@ export class AuthService {
     return this.jwtHelper.isTokenExpired(token);
   }
 
+  public isBooklister(): Observable<boolean>{
+    const token = this.loadAccessTokenFromLocalCache();
+    if(token == null || this.isTokenExpired(token)){
+      const refreshToken = this.loadRefreshTokenFromLocalCache();
+      if(refreshToken == null || this.isTokenExpired(refreshToken)) return of(false);
+      return this.getAccessToken(refreshToken).pipe(
+        tap(accessResponse => this.saveAccessToken(accessResponse.headers.get('authorization')!)),
+        map(accessResponse => {
+          const accessToken = accessResponse.headers.get('authorization')!;
+          const authorities = (this.jwtHelper.decodeToken(accessToken).authorities as [prop: string]);
+          const found = authorities.find(value => value === "book:read");
+          if(found !== undefined && found.length > 0){
+            return true;
+          }
+          return false;
+        })
+      );
+    }
+    return of(true);
+  }
+
+}
+
+export type responseTypes = {
+  notEnoughOfPrivileges: boolean,
+  notLoggedIn: boolean,
+  successRegister: boolean
 }

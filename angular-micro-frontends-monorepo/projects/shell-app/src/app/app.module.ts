@@ -9,10 +9,11 @@ import { MainPageComponent } from './main-page/main-page.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthGuard } from './auth/guard/auth.guard';
+import { LoggedInGuard } from './auth/guard/logged-in.guard';
 import { AuthInterceptor } from './auth/interceptor/auth.interceptor';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
+import { IsBooklisterGuard } from './auth/guard/is-booklister.guard';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,7 @@ import { RegisterComponent } from './auth/register/register.component';
     MainPageComponent,
     NotFoundComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,13 +34,14 @@ import { RegisterComponent } from './auth/register/register.component';
     AppRoutingModule,
   ],
   providers: [
-    AuthGuard,
+    LoggedInGuard,
+    IsBooklisterGuard,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
     },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

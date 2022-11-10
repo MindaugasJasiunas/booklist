@@ -20,7 +20,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
   // runs before request leaves
   intercept(request: HttpRequest< any>, next: HttpHandler): Observable< HttpEvent< any>> {
-    console.log('intercept filtering: '+request.url);
     if (
       request.url.includes(environment.loginUrl) ||
       request.url.includes(environment.registerUrl) ||
@@ -37,8 +36,7 @@ export class AuthInterceptor implements HttpInterceptor {
     let modifiedRequest = request.clone({
       setHeaders: { Authorization: `${jwtToken}` },
     });
-
-    if (this.authService.isTokenExpired(jwtToken?.substring(7))) {
+    if (!jwtToken || this.authService.isTokenExpired(jwtToken?.substring(7))) {
       // handle expired JWT before sending request
       this.authService.loadRefreshTokenFromLocalCache();
       const refreshToken = this.authService.loadRefreshTokenFromLocalCache();
