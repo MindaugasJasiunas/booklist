@@ -1,14 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
 import { MainPageComponent } from './main-page/main-page.component';
-import { RegisterComponent } from './register/register.component';
 import { loadRemoteModule } from '@angular-architects/module-federation';
 import { NotFoundComponent } from './not-found/not-found.component';
 
 const routes: Routes = [
-  { path: `login`, component: LoginComponent },
-  { path: `register`, component: RegisterComponent },
   {
     path: `books`,
     loadChildren: () =>
@@ -20,7 +16,17 @@ const routes: Routes = [
         .then((m) => m.BooksModule)
         .catch((err) => console.log('ERROR:', err)),
   },
-
+  {
+    path: `auth`,
+    loadChildren: () =>
+      loadRemoteModule({
+        type: 'module',
+        remoteEntry: 'http://localhost:4203/remoteEntry.js',
+        exposedModule: './auth.module',
+      })
+        .then((m) => m.AuthModule)
+        .catch((err) => console.log('ERROR:', err)),
+  },
   { path: ``, component: MainPageComponent, pathMatch: 'full' },
   {
     path: '**',
