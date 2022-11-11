@@ -56,9 +56,11 @@ public class BookHandler {
         }
 
         if(request.queryParam("search").isPresent()){
+            log.debug("[BookHandler] getBooks(page="+page+", size="+size+", sort="+sortFieldName+", search="+request.queryParam("search").get()+") called");
             return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromPublisher(service.getBooks(PageRequest.of(page, size).withSort(Sort.by(sortFieldName).descending()), request.queryParam("search").get()), new ParameterizedTypeReference<Page<Book>>(){}));
         }
 
+        log.debug("[BookHandler] getBooks(page="+page+", size="+size+", sort="+sortFieldName+") called");
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromPublisher(service.getBooks(PageRequest.of(page, size).withSort(Sort.by(sortFieldName).descending())), new ParameterizedTypeReference<Page<Book>>(){}));
     }
 
@@ -67,8 +69,11 @@ public class BookHandler {
     public Mono<ServerResponse> createBook(ServerRequest request){
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:create")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
-        System.out.println("createBook()");
         return request.bodyToMono(Book.class)
+                .map(book -> {
+                    log.debug("[BookHandler] createBook("+book+") called");
+                    return book;
+                })
                 .flatMap(service::createBook)
                 .flatMap(createdBook -> ServerResponse.created(URI.create("http://localhost:9090/api/v1/books/" + createdBook.getISBN())).build())
                 .switchIfEmpty(ServerResponse.badRequest().build())
@@ -78,8 +83,8 @@ public class BookHandler {
     public Mono<ServerResponse> updateBookByISBN(ServerRequest request){
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:update")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
-        System.out.println("updateBookByISBN()");
         String isbn = request.pathVariable("ISBN");
+        log.debug("[BookHandler] updateBookByISBN("+isbn+") called");
         return request.bodyToMono(Book.class)
                 .flatMap(bookToSave -> service.updateBook(bookToSave, isbn))
                 .flatMap(savedBook -> ServerResponse.noContent().build())
@@ -90,8 +95,8 @@ public class BookHandler {
     public Mono<ServerResponse> patchBookByISBN(ServerRequest request){
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:update")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
-        System.out.println("patchBookByISBN()");
         String isbn = request.pathVariable("ISBN");
+        log.debug("[BookHandler] patchBookByISBN("+isbn+") called");
         return request.bodyToMono(Book.class)
                 .flatMap(bookToSave -> service.patchBook(bookToSave, isbn))
                 .flatMap(savedUser -> ServerResponse.noContent().build())
@@ -102,8 +107,8 @@ public class BookHandler {
     public Mono<ServerResponse> deleteBookByISBN(ServerRequest request){
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:delete")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
-        System.out.println("deleteBookByISBN()");
         String isbn = request.pathVariable("ISBN");
+        log.debug("[BookHandler] deleteBookByISBN("+isbn+") called");
         return service.deleteBook(isbn)
                 .flatMap(unused -> ServerResponse.noContent().build())
                 .switchIfEmpty(ServerResponse.noContent().build());
