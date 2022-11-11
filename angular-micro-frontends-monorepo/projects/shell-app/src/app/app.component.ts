@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth/auth.service';
+import { ConsoleToggleService } from './console-toggle.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,10 @@ export class AppComponent {
   companyTitle: string = 'Company, Inc';
   appTitle: string = 'Booklist';
 
-  constructor(private router: Router, private service: AuthService) {}
+  constructor(private router: Router, private service: AuthService, private consoleToggleService: ConsoleToggleService) {
+    // disable console logging in production
+    consoleToggleService.disableConsoleInProduction();
+  }
 
   logout() {
     this.service.logout();
