@@ -67,6 +67,48 @@ spring:
         predicates[0]: Path=/resettoken
         predicates[1]: Method=POST
         filters[0]: RemoveRequestHeader=Cookie
+      routes[9]:
+        id: books-service-get-my-books
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/my-books
+        predicates[1]: Method=GET
+        predicates[2]: Header=Authorization, Bearer (.*)
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[10]:
+        id: books-service-get-wishlist
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/wishlist
+        predicates[1]: Method=GET
+        predicates[2]: Header=Authorization, Bearer (.*)
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[11]:
+        id: books-service-add-to-my-books
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/my-books/**
+        predicates[1]: Method=POST
+        predicates[2]: Header=Authorization, Bearer (.*)
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[12]:
+        id: books-service-add-to-wishlist
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/wishlist/**
+        predicates[1]: Method=POST
+        predicates[2]: Header=Authorization, Bearer (.*)
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[13]:
+        id: books-service-remove-from-my-books
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/my-books/**
+        predicates[1]: Method=DELETE
+        predicates[2]: Header=Authorization, Bearer (.*)
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[14]:
+        id: books-service-delete-from-wishlist
+        uri: lb://books-service/
+        predicates[0]: Path=/api/v1/wishlist/**
+        predicates[1]: Method=DELETE
+        predicates[2]: Header=Authorization, Bearer (.*)
+        filters[0]: RemoveRequestHeader=Cookie
 
 server:
   port: 9090  # port where all requests will be coming
