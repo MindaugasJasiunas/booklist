@@ -1,6 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, filter, forkJoin, map, observable, Observable, of, switchMap, tap } from 'rxjs';
+import { AuthService } from 'projects/shell-app/src/app/auth/auth.service';
+import { BehaviorSubject, catchError, combineLatest, filter, forkJoin, map, observable, Observable, of, switchMap, tap } from 'rxjs';
 import { Book } from '../../model/book.model';
 import { BookService } from '../book.service';
 
@@ -20,7 +22,7 @@ export class BooksComponent {
   itemsPerPage$ = new BehaviorSubject(10);
   totalPages$!: Observable<number>;
 
-  constructor(private route: ActivatedRoute, private service: BookService, private cdr: ChangeDetectorRef, private router: Router) {
+  constructor(private route: ActivatedRoute, private service: BookService, private cdr: ChangeDetectorRef, private router: Router, private authService: AuthService) {
 
     this.totalPages$ = combineLatest([service.totalBooks, this.itemsPerPage$]).pipe(
       switchMap(([booksTotal, booksPerPage]) => {
@@ -101,15 +103,23 @@ export class BooksComponent {
   }
 
   onAddToMyBooks(isbn: string){
+    console.log('add to My Books');
+    return this.service.postToMyBooks(isbn).subscribe();
   }
 
   onRemoveFromMyBooks(isbn: string){
+    console.log('remove from My Books');
+    return this.service.deleteFromMyBooks(isbn).subscribe();
   }
 
   onAddToWishlist(isbn: string){
+    console.log('add to Wishlist');
+    return this.service.postToWishlist(isbn).subscribe();
   }
 
   onRemoveFromWishlist(isbn: string){
+    console.log('remove from Wishlist');
+    return this.service.deleteFromWishlist(isbn).subscribe();
   }
 
   nextPage(){
@@ -139,6 +149,10 @@ export class BooksComponent {
 
   get noResultsText(): NoBookResultText{
     return this.type === 'books-search' ? 'Sorry there is no books matching your search criteria' : 'Sorry there is no books';
+  }
+
+  isUserLogged(): boolean{
+    return this.authService.isLoggedIn();
   }
 
 }

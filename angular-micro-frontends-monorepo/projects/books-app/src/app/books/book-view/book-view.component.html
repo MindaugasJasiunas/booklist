@@ -19,8 +19,8 @@
     <div class="col-8">
       <p>Type: {{ book.isHardtop ? "Hardtop book" : "ebook" }}</p>
       <p>Pages: {{ book.pages }}</p>
-      <div class="col-12" style="border: 1px solid black">
-        <p>Logged-in user zone</p>
+      <div class="col-12" style="border: 1px solid white; border-radius: 15px; background-color: antiquewhite;" *ngIf="isLoggedIn">
+        <p style="padding: 5px;">Logged-in user zone</p>
         <table class="buttons">
           <tr>
             <td><button class="btn btn-success" (click)="onAddToMyBooks(book.ISBN)">Add to My Books</button></td>

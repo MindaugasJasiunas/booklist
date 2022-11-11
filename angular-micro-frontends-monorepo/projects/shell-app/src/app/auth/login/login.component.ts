@@ -62,8 +62,8 @@ export class LoginComponent implements OnInit {
       tap(loginResponse => this.service.saveRefreshToken(loginResponse.headers.get('authorization')!)),
       switchMap(loginResponse => this.service.getAccessToken(loginResponse.headers.get('authorization')!)),
       tap(accessResponse => this.service.saveAccessToken(accessResponse.headers.get('authorization')!)),
-      catchError((err: HttpErrorResponse) => this.errorMsg=err.message),
-      map(_ => this.router.navigate(['/']))
+      map(_ => this.router.navigate(['/'])),
+      catchError((err: HttpErrorResponse) => this.errorMsg="Email or password is invalid")
     ).subscribe();
 
 
