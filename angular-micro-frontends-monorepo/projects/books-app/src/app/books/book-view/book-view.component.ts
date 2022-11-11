@@ -18,6 +18,7 @@ export class BookViewComponent implements OnInit {
   @Output() addToWishlist = new EventEmitter<string>();
   @Output() removeFromMyBooks = new EventEmitter<string>();
   @Output() removeFromWishlist = new EventEmitter<string>();
+  @Input() isLoggedIn!: boolean;
 
   constructor() {}
 

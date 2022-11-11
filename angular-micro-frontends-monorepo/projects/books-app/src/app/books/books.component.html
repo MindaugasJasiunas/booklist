@@ -24,6 +24,7 @@
           (removeFromMyBooks)="onRemoveFromMyBooks($event)"
           (addToWishlist)="onAddToWishlist($event)"
           (removeFromWishlist)="onRemoveFromWishlist($event)"
+          [isLoggedIn]="isUserLogged()"
         ></app-book-view>
       </ng-container>
     </div>

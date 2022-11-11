@@ -29,6 +29,7 @@ public class MyBooksHandler {
 
 
     public Mono<ServerResponse> getMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
+        log.debug(isWishlist ? "[MyBooksHandler] getMyBooksOrWISHLIST" : "[MyBooksHandler] getMyBOOKSOrWishlist");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         int page = 0;
@@ -67,6 +68,7 @@ public class MyBooksHandler {
     }
 
     public Mono<ServerResponse> addToMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
+        log.debug(isWishlist ? "[MyBooksHandler] addToMyBooksOrWISHLIST" : "[MyBooksHandler] addToMyBOOKSOrWishlist");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String userEmail = jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7));
@@ -83,6 +85,7 @@ public class MyBooksHandler {
     }
 
     public Mono<ServerResponse> removeFromMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
+        log.debug(isWishlist ? "[MyBooksHandler] removeFromMyBooksOrWISHLIST" : "[MyBooksHandler] removeFromMyBOOKSOrWishlist");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String userEmail = jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7));

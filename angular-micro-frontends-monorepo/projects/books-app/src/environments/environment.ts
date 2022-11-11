@@ -4,13 +4,11 @@
 
 export const environment = {
   production: false,
-  getBookUrl: 'http://localhost:9090/api/v1/books',
-  getBooksUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
+  booksUrl: 'http://localhost:9090/api/v1/books/',
   searchBooksUrl: 'http://localhost:9090/api/v1/books?search=',
-  createBookUrl: 'http://localhost:9090/api/v1/books',
-  updateBookUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
-  partiallyUpdateBookUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
-  deleteBookUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
+
+  myBooksUrl: 'http://localhost:9090/api/v1/my-books/',
+  wishlistUrl: 'http://localhost:9090/api/v1/wishlist/',
 };
 
 /*
