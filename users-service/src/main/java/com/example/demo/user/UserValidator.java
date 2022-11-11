@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 public interface UserValidator extends Function<User, UserValidator.ValidationResult> {
     enum ValidationResult{
-        SUCCESS("Success"), USERNAME_NOT_VALID("Username not valid"), FIRSTNAME_NOT_VALID("First name not valid"), LASTNAME_NOT_VALID("Last name not valid"), PASSWORD_NOT_VALID("Password not valid"), ROLE_NOT_PROVIDED("User ROLE is not provided");
+        SUCCESS("Success"), USERNAME_NOT_VALID("Email not valid"), FIRSTNAME_NOT_VALID("First name not valid"), LASTNAME_NOT_VALID("Last name not valid"), PASSWORD_NOT_VALID("Password not valid"), ROLE_NOT_PROVIDED("User ROLE is not provided");
         private String reason;
         ValidationResult(String reason){
             this.reason = reason;

@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
     @Override
     public Mono<User> register(User user){
         // default roleId of ROLE_USER (if no role provided)
-        if(user.getRole() == null) user.setRole(getDefaultRole());
+        user.setRole(getDefaultRole());
 
         UserValidator.ValidationResult result = isUserValid(user);
         if(result != UserValidator.ValidationResult.SUCCESS){
