@@ -14,11 +14,11 @@ public class MyBooksRoutesV1Config {
     @Bean
     public RouterFunction<ServerResponse> myBooksV1(MyBooksHandler handler) {
         return RouterFunctions.route()
-                .GET("api/v1/my-books/", accept(APPLICATION_JSON), handler::getMyBooks)
+                .GET("api/v1/my-books", accept(APPLICATION_JSON), handler::getMyBooks)
                 .POST("api/v1/my-books/{ISBN}", accept(APPLICATION_JSON), handler::addToMyBooks)
                 .DELETE("api/v1/my-books/{ISBN}", accept(APPLICATION_JSON), handler::removeFromMyBooks)
 
-                .GET("api/v1/wishlist/", accept(APPLICATION_JSON), handler::getWishlist)
+                .GET("api/v1/wishlist", accept(APPLICATION_JSON), handler::getWishlist)
                 .POST("api/v1/wishlist/{ISBN}", accept(APPLICATION_JSON), handler::addToWishlist)
                 .DELETE("api/v1/wishlist/{ISBN}", accept(APPLICATION_JSON), handler::removeFromWishlist)
 

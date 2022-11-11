@@ -1,6 +1,7 @@
 package com.example.demo.bookuser;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,7 +19,12 @@ public class BookUserServiceImpl implements BookUserService{
     }
 
     @Override
-    public Mono<BookUser> findAllBookUserByEmailAndISBN(String email, String isbn){
+    public Flux<BookUser> findAllBookUserByEmail(String email, PageRequest pagination){
+        return bookUserRepository.findAllByUserEmailAndPaginate(email, pagination.getPageNumber()*pagination.getPageSize(), pagination.getPageSize());
+    }
+
+    @Override
+    public Mono<BookUser> findBookUserByEmailAndISBN(String email, String isbn){
         return bookUserRepository.findByUserEmailAndBookISBN(email, isbn);
     }
 

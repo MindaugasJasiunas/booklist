@@ -6,8 +6,12 @@ import com.example.demo.bookuser.BookUser;
 import com.example.demo.bookuser.BookUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -26,14 +30,37 @@ public class MyBooksHandler {
     public Mono<ServerResponse> getMyBooks(ServerRequest request){
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
-        // TODO: paginate returning books
-        // TODO: implement Wishlist
+        int page = 0;
+        int size = 10;
+        String sortFieldName = "title";
+
+        if(request.queryParam("page").isPresent()){
+            try{
+                page = Integer.parseInt(request.queryParam("page").get());
+            }catch (NumberFormatException e){}
+        }
+        if(request.queryParam("size").isPresent()){
+            try{
+                size = Integer.parseInt(request.queryParam("size").get());
+            }catch (NumberFormatException e){}
+        }
+        if(request.queryParam("sort").isPresent()){
+            sortFieldName = request.queryParam("sort").get();
+        }
+
+        PageRequest pagination = PageRequest.of(page, size, Sort.by(sortFieldName));
 
         return bookUserService
-                .findAllBookUserByEmail(jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7)))
+                .findAllBookUserByEmail(jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7)), pagination)
                 .flatMap(bookUser -> bookService.getBook(bookUser.getBookISBN()))
                 .collectList()
-                .flatMap(booksList -> ServerResponse.ok().body(BodyInserters.fromValue(booksList)));
+                .zipWith(bookUserService.findAllBookUserByEmail(jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7))).count())
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pagination, tuple.getT2()))
+                .flatMap(booksList ->
+                        ServerResponse
+                                .ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(BodyInserters.fromValue(booksList)));
     }
 
     public Mono<ServerResponse> addToMyBooks(ServerRequest request){
@@ -59,13 +86,14 @@ public class MyBooksHandler {
         String bookISBN = request.pathVariable("ISBN");
 
         // if exists - remove from DB
-        return bookUserService.findAllBookUserByEmailAndISBN(userEmail, bookISBN)
+        return bookUserService.findBookUserByEmailAndISBN(userEmail, bookISBN)
                 .switchIfEmpty(Mono.error(() -> new RuntimeException("Doesn't exist in my books")))
                 .flatMap(bookUserService::deleteFromMyBooks)
                 .flatMap(unused -> ServerResponse.noContent().build());
     }
 
 
+    // TODO: implement Wishlist
     public Mono<ServerResponse> getWishlist(ServerRequest request){
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
