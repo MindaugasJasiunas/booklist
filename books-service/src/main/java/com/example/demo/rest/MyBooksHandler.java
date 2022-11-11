@@ -27,7 +27,8 @@ public class MyBooksHandler {
     private final BookUserService bookUserService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public Mono<ServerResponse> getMyBooks(ServerRequest request){
+
+    public Mono<ServerResponse> getMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         int page = 0;
@@ -50,11 +51,13 @@ public class MyBooksHandler {
 
         PageRequest pagination = PageRequest.of(page, size, Sort.by(sortFieldName));
 
+        String subject = jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7));
+
         return bookUserService
-                .findAllBookUserByEmail(jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7)), pagination)
+                .findAllBookUserByEmail(subject, pagination, isWishlist)
                 .flatMap(bookUser -> bookService.getBook(bookUser.getBookISBN()))
                 .collectList()
-                .zipWith(bookUserService.findAllBookUserByEmail(jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7))).count())
+                .zipWith(bookUserService.findAllBookUserByEmail(subject, isWishlist).count())
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pagination, tuple.getT2()))
                 .flatMap(booksList ->
                         ServerResponse
@@ -63,55 +66,33 @@ public class MyBooksHandler {
                                 .body(BodyInserters.fromValue(booksList)));
     }
 
-    public Mono<ServerResponse> addToMyBooks(ServerRequest request){
+    public Mono<ServerResponse> addToMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String userEmail = jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7));
         String bookISBN = request.pathVariable("ISBN");
-        BookUser record = new BookUser(null, userEmail, bookISBN);
+        BookUser record = new BookUser(null, userEmail, bookISBN, false);
 
         return Mono.just(record)
-                .filterWhen(bookUserService::bookNotExistsInMyBooks)
+                .filterWhen(bookUser -> bookUserService.bookNotExistsInMyBooksOrWishlist(bookUser, isWishlist))
                 .switchIfEmpty(Mono.error(() -> new RuntimeException("Already in my books")))
-                .filterWhen(bookUserToSave -> bookService.bookNotExistsInDBByISBN(bookUserToSave.getBookISBN()))
+                .filterWhen(bookUserToSave -> bookService.bookNotExistsInDBByISBN(bookUserToSave.getBookISBN()).map(aBoolean -> !aBoolean)) // if book exists
                 .switchIfEmpty(Mono.error(() -> new RuntimeException("Book doesn't exist")))
-                .flatMap(bookUserService::saveToMyBooks)
+                .flatMap(bookUser -> bookUserService.saveToMyBooksOrWishlist(bookUser, isWishlist))
                 .flatMap(savedBookUser -> ServerResponse.noContent().build());
     }
 
-    public Mono<ServerResponse> removeFromMyBooks(ServerRequest request){
+    public Mono<ServerResponse> removeFromMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String userEmail = jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7));
         String bookISBN = request.pathVariable("ISBN");
 
         // if exists - remove from DB
-        return bookUserService.findBookUserByEmailAndISBN(userEmail, bookISBN)
+        return bookUserService.findBookUserByEmailAndISBN(userEmail, bookISBN, isWishlist)
                 .switchIfEmpty(Mono.error(() -> new RuntimeException("Doesn't exist in my books")))
-                .flatMap(bookUserService::deleteFromMyBooks)
+                .flatMap(bookUserToDelete -> bookUserService.deleteFromMyBooksOrWishlist(bookUserToDelete, isWishlist))
                 .flatMap(unused -> ServerResponse.noContent().build());
-    }
-
-
-    // TODO: implement Wishlist
-    public Mono<ServerResponse> getWishlist(ServerRequest request){
-        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
-
-        return ServerResponse.notFound().build();
-    }
-
-    public Mono<ServerResponse> addToWishlist(ServerRequest request){
-        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
-
-        String isbn = request.pathVariable("ISBN");
-        return ServerResponse.notFound().build();
-    }
-
-    public Mono<ServerResponse> removeFromWishlist(ServerRequest request){
-        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
-
-        String isbn = request.pathVariable("ISBN");
-        return ServerResponse.notFound().build();
     }
 
 }

@@ -11,9 +11,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "books_users")
 public class BookUser {
     @Id
-//    private BookUserId id;
     private String id;
     private String userEmail;
     private String bookISBN;
+    private boolean isWishlist = false;
 
 }

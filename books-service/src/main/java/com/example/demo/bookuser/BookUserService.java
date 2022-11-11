@@ -5,13 +5,12 @@ import org.springframework.data.domain.PageRequest;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 
 public interface BookUserService {
-    Flux<BookUser> findAllBookUserByEmail(String email);
-    Flux<BookUser> findAllBookUserByEmail(String email, PageRequest pagination);
-    Mono<BookUser> findBookUserByEmailAndISBN(String email, String isbn);
-    Mono<BookUser> saveToMyBooks(BookUser bookUser);
-    Mono<Void> deleteFromMyBooks(BookUser bookUser);
-    Mono<Boolean> bookNotExistsInMyBooks(BookUser bookUser);
+    Flux<BookUser> findAllBookUserByEmail(String email, boolean isWishlist);
+    Flux<BookUser> findAllBookUserByEmail(String email, PageRequest pagination, boolean isWishlist);
+    Mono<BookUser> findBookUserByEmailAndISBN(String email, String isbn, boolean isWishlist);
+    Mono<BookUser> saveToMyBooksOrWishlist(BookUser bookUser, boolean isWishlist);
+    Mono<Void> deleteFromMyBooksOrWishlist(BookUser bookUser, boolean isWishlist);
+    Mono<Boolean> bookNotExistsInMyBooksOrWishlist(BookUser bookUser, boolean isInWishlist);
 }

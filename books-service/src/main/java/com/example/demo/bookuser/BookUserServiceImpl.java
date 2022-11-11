@@ -14,38 +14,46 @@ public class BookUserServiceImpl implements BookUserService{
     private final BookUserRepository bookUserRepository;
 
     @Override
-    public Flux<BookUser> findAllBookUserByEmail(String email){
-        return bookUserRepository.findAllByUserEmail(email);
+    public Flux<BookUser> findAllBookUserByEmail(String email, boolean isWishlist){
+        return bookUserRepository.findAllByUserEmail(email)
+                .filter(bookUser -> bookUser.isWishlist() == isWishlist);
     }
 
     @Override
-    public Flux<BookUser> findAllBookUserByEmail(String email, PageRequest pagination){
-        return bookUserRepository.findAllByUserEmailAndPaginate(email, pagination.getPageNumber()*pagination.getPageSize(), pagination.getPageSize());
+    public Flux<BookUser> findAllBookUserByEmail(String email, PageRequest pagination, boolean isWishlist){
+        return bookUserRepository.findAllByUserEmailAndPaginate(email, isWishlist, pagination.getPageNumber()*pagination.getPageSize(), pagination.getPageSize());
+//                .filter(bookUser -> bookUser.isWishlist() == isWishlist);
     }
 
     @Override
-    public Mono<BookUser> findBookUserByEmailAndISBN(String email, String isbn){
-        return bookUserRepository.findByUserEmailAndBookISBN(email, isbn);
+    public Mono<BookUser> findBookUserByEmailAndISBN(String email, String isbn, boolean isWishlist){
+        return bookUserRepository.findByUserEmailAndBookISBNAndWishlist(email, isbn, isWishlist);
     }
 
     @Override
-    public Mono<BookUser> saveToMyBooks(BookUser bookUser) {
+    public Mono<BookUser> saveToMyBooksOrWishlist(BookUser bookUser, boolean isWishlist) {
         return Mono.just(bookUser)
-                .filterWhen(this::bookNotExistsInMyBooks)
+                .map(bookUserToSave -> {
+                    bookUserToSave.setWishlist(isWishlist);
+                    return bookUserToSave;
+                })
+                .filterWhen(bookUserToSave -> bookNotExistsInMyBooksOrWishlist(bookUserToSave, isWishlist))
                 .flatMap(bookUserRepository::save);
     }
 
     @Override
-    public Mono<Void> deleteFromMyBooks(BookUser bookUser) {
+    public Mono<Void> deleteFromMyBooksOrWishlist(BookUser bookUser, boolean isWishlist) {
         return Mono.just(bookUser)
-                .filterWhen(bookUserToSave -> bookNotExistsInMyBooks(bookUserToSave).map(aBoolean -> !aBoolean))
+                .filterWhen(bookUserToDelete -> bookNotExistsInMyBooksOrWishlist(bookUserToDelete, isWishlist).map(aBoolean -> !aBoolean))
+                .filter(bookUserToDelete -> bookUserToDelete.isWishlist() == isWishlist)
                 .map(bookUserObj -> bookUserObj.getId())
                 .flatMap(bookUserRepository::deleteById);
     }
 
     @Override
-    public Mono<Boolean> bookNotExistsInMyBooks(BookUser bookUser){
-        return bookUserRepository.findByUserEmailAndBookISBN(bookUser.getUserEmail(), bookUser.getBookISBN())
+    public Mono<Boolean> bookNotExistsInMyBooksOrWishlist(BookUser bookUser, boolean isInWishlist){
+        return bookUserRepository.findByUserEmailAndBookISBNAndWishlist(bookUser.getUserEmail(), bookUser.getBookISBN(), isInWishlist)
+                .filter(bookUserFromDB -> bookUserFromDB.isWishlist() == isInWishlist)
                 .flatMap(recordFromDB -> Mono.just(false))
                 .switchIfEmpty(Mono.just(true));
     }
