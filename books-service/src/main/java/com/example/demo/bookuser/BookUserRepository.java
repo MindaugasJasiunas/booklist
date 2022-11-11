@@ -1,6 +1,5 @@
 package com.example.demo.bookuser;
 
-import com.example.demo.book.Book;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;

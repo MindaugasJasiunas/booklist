@@ -22,7 +22,6 @@ public class BookUserServiceImpl implements BookUserService{
     @Override
     public Flux<BookUser> findAllBookUserByEmail(String email, PageRequest pagination, boolean isWishlist){
         return bookUserRepository.findAllByUserEmailAndPaginate(email, isWishlist, pagination.getPageNumber()*pagination.getPageSize(), pagination.getPageSize());
-//                .filter(bookUser -> bookUser.isWishlist() == isWishlist);
     }
 
     @Override
