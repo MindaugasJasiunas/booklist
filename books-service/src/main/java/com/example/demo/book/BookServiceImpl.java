@@ -1,13 +1,19 @@
 package com.example.demo.book;
 
+import com.example.demo.bookuser.BookUser;
+import com.example.demo.bookuser.BookUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+
 @RequiredArgsConstructor
 @Slf4j
 
@@ -44,7 +50,7 @@ public class BookServiceImpl implements BookService{
         log.debug("[BookServiceImpl] createBook(book="+book+")");
         Mono<Book> bookMono = Mono.just(book);
         return bookMono
-                .filterWhen(this::bookNotExistsInDBByISBN)
+                .filterWhen(bookToSave -> bookNotExistsInDBByISBN(bookToSave.getISBN()))
                 .switchIfEmpty(Mono.error(() -> new RuntimeException("Book with provided ISBN already exists")))
                 .flatMap(bookRepository::save);
     }
@@ -92,9 +98,9 @@ public class BookServiceImpl implements BookService{
         return bookRepository.deleteByISBN(isbn);
     }
 
-
-    private Mono<Boolean> bookNotExistsInDBByISBN(Book book){
-        return bookRepository.findByISBN(book.getISBN())
+    @Override
+    public Mono<Boolean> bookNotExistsInDBByISBN(String isbn){
+        return bookRepository.findByISBN(isbn)
                 .flatMap(userFromDB -> Mono.just(false))
                 .switchIfEmpty(Mono.just(true));
     }
