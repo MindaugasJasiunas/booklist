@@ -13,7 +13,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class BookRoutesV1Config {
 
     @Bean
-    public RouterFunction<ServerResponse> userRoutesV1(BookHandler handler) {
+    public RouterFunction<ServerResponse> bookRoutesV1(BookHandler handler) {
         return RouterFunctions.route()
                 .GET("api/v1/books", accept(APPLICATION_JSON), handler::getBooks)
                 .GET("api/v1/books/{ISBN}", accept(APPLICATION_JSON), handler::getBookByISBN)

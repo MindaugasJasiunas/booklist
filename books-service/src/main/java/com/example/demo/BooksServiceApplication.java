@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.auth.JwtTokenProvider;
 import com.example.demo.book.Book;
 import com.example.demo.book.BookRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.ResourceUtils;
@@ -17,6 +19,7 @@ import java.util.Arrays;
 @Slf4j
 
 @EnableDiscoveryClient
+@EnableConfigurationProperties({JwtTokenProvider.class})
 @SpringBootApplication
 public class BooksServiceApplication {
 

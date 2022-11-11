@@ -1,5 +1,6 @@
 package com.example.demo.rest;
 
+import com.example.demo.auth.JwtTokenProvider;
 import com.example.demo.book.Book;
 import com.example.demo.book.BookService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,7 @@ import java.net.URI;
 @Component
 public class BookHandler {
     private final BookService service;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public Mono<ServerResponse> getBookByISBN(ServerRequest request){
         String isbn = request.pathVariable("ISBN");
@@ -62,6 +65,8 @@ public class BookHandler {
 
 
     public Mono<ServerResponse> createBook(ServerRequest request){
+        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:create")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
+
         System.out.println("createBook()");
         return request.bodyToMono(Book.class)
                 .flatMap(service::createBook)
@@ -71,6 +76,8 @@ public class BookHandler {
     }
 
     public Mono<ServerResponse> updateBookByISBN(ServerRequest request){
+        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:update")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
+
         System.out.println("updateBookByISBN()");
         String isbn = request.pathVariable("ISBN");
         return request.bodyToMono(Book.class)
@@ -81,6 +88,8 @@ public class BookHandler {
     }
 
     public Mono<ServerResponse> patchBookByISBN(ServerRequest request){
+        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:update")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
+
         System.out.println("patchBookByISBN()");
         String isbn = request.pathVariable("ISBN");
         return request.bodyToMono(Book.class)
@@ -91,6 +100,8 @@ public class BookHandler {
     }
 
     public Mono<ServerResponse> deleteBookByISBN(ServerRequest request){
+        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:delete")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
+
         System.out.println("deleteBookByISBN()");
         String isbn = request.pathVariable("ISBN");
         return service.deleteBook(isbn)
