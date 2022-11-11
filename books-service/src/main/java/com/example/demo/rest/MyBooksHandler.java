@@ -4,6 +4,7 @@ import com.example.demo.auth.JwtTokenProvider;
 import com.example.demo.book.BookService;
 import com.example.demo.bookuser.BookUser;
 import com.example.demo.bookuser.BookUserService;
+import com.example.demo.error.ForbiddenError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
@@ -30,7 +31,7 @@ public class MyBooksHandler {
 
     public Mono<ServerResponse> getMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
         log.debug(isWishlist ? "[MyBooksHandler] getMyBooksOrWISHLIST" : "[MyBooksHandler] getMyBOOKSOrWishlist");
-        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
+        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) throw new ForbiddenError("Expired access token or insufficient authorities");
 
         int page = 0;
         int size = 10;
@@ -69,7 +70,7 @@ public class MyBooksHandler {
 
     public Mono<ServerResponse> addToMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
         log.debug(isWishlist ? "[MyBooksHandler] addToMyBooksOrWISHLIST" : "[MyBooksHandler] addToMyBOOKSOrWishlist");
-        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
+        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) throw new ForbiddenError("Expired access token or insufficient authorities");
 
         String userEmail = jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7));
         String bookISBN = request.pathVariable("ISBN");
@@ -86,7 +87,7 @@ public class MyBooksHandler {
 
     public Mono<ServerResponse> removeFromMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
         log.debug(isWishlist ? "[MyBooksHandler] removeFromMyBooksOrWISHLIST" : "[MyBooksHandler] removeFromMyBOOKSOrWishlist");
-        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
+        if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) throw new ForbiddenError("Expired access token or insufficient authorities");
 
         String userEmail = jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7));
         String bookISBN = request.pathVariable("ISBN");
