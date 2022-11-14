@@ -1,18 +1,13 @@
 package com.example.demo.book;
 
-import com.example.demo.bookuser.BookUser;
-import com.example.demo.bookuser.BookUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j

@@ -30,7 +30,7 @@ public class MyBooksHandler {
 
 
     public Mono<ServerResponse> getMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
-        log.debug(isWishlist ? "[MyBooksHandler] getMyBooksOrWISHLIST" : "[MyBooksHandler] getMyBOOKSOrWishlist");
+        log.debug("[MyBooksHandler] getMyBooksOrWishlist(isWishlist = "+isWishlist+")");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) throw new ForbiddenError("Expired access token or insufficient authorities");
 
         int page = 0;
@@ -69,7 +69,7 @@ public class MyBooksHandler {
     }
 
     public Mono<ServerResponse> addToMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
-        log.debug(isWishlist ? "[MyBooksHandler] addToMyBooksOrWISHLIST" : "[MyBooksHandler] addToMyBOOKSOrWishlist");
+        log.debug("[MyBooksHandler] addToMyBooksOrWishlist(isWishlist = "+isWishlist+")");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) throw new ForbiddenError("Expired access token or insufficient authorities");
 
         String userEmail = jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7));
@@ -86,7 +86,7 @@ public class MyBooksHandler {
     }
 
     public Mono<ServerResponse> removeFromMyBooksOrWishlist(ServerRequest request, boolean isWishlist){
-        log.debug(isWishlist ? "[MyBooksHandler] removeFromMyBooksOrWISHLIST" : "[MyBooksHandler] removeFromMyBOOKSOrWishlist");
+        log.debug("[MyBooksHandler] removeFromMyBooksOrWishlist(isWishlist = "+isWishlist+")");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:read")) throw new ForbiddenError("Expired access token or insufficient authorities");
 
         String userEmail = jwtTokenProvider.getSubject(request.headers().firstHeader(HttpHeaders.AUTHORIZATION).substring(7));

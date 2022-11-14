@@ -54,7 +54,6 @@ public class User implements UserDetails {
     public void setRole(Role role){
         if(role == null) return;
         this.role = role;
-//        this.roleId = role.getId();
     }
 
     @Override

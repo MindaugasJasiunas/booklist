@@ -10,7 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -22,7 +21,6 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class AuthHandler {
-    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final ReactiveUserDetailsService userDetailsService;
     private final JwtTokenProvider jwtUtil;
@@ -47,14 +45,6 @@ public class AuthHandler {
                     log.debug("User logging-in with username: "+authRequest.email());
                     return authRequest;
                 })
-//                .flatMap(authRequest ->
-//                        userDetailsService.findByUsername(authRequest.email())
-//                            .filter(userDetails -> passwordEncoder.matches(authRequest.password(), userDetails.getPassword()))
-//                            .filter(UserDetails::isEnabled)
-//                            .filter(UserDetails::isAccountNonExpired)
-//                            .filter(UserDetails::isAccountNonLocked)
-//                            .filter(UserDetails::isCredentialsNonExpired)
-//                )
                 .flatMap(userService::login)
                 .flatMap(userDetails -> ServerResponse.ok().header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", jwtUtil.generateJwtToken(userDetails))).build())
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username/Password is invalid")))
