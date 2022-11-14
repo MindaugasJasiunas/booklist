@@ -122,3 +122,13 @@ logging:
   level:
     org.springframework.cloud.gateway: debug
     reactor.netty.http.client: debug
+
+# Spring Boot Actuator
+management:
+  endpoint:
+    gateway:
+      enabled: true # default value
+  endpoints:
+    web:
+      exposure:
+        include: gateway

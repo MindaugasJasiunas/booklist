@@ -7,6 +7,7 @@ services:
       - 27017:27017
     restart: always
     environment:
+      # should be kept as secrets - externalize to environment variables!
       MONGO_INITDB_DATABASE: booksdb
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootroot
@@ -21,26 +22,194 @@ services:
       spring.application.name: eureka-service
       server.port: 8761
       eureka.instance.hostname: eureka1
-      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8762/eureka, http://eureka3:8763/eureka
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8761/eureka, http://eureka3:8761/eureka
   eureka2:
     image: mindaugasjasiunas/eureka
     container_name: eureka-2
     ports:
-      - 8762:8762
+      - 8762:8761
     restart: always
     environment:
       spring.application.name: eureka-service
-      server.port: 8762
+      server.port: 8761
       eureka.instance.hostname: eureka2
-      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8762/eureka, http://eureka3:8763/eureka
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8761/eureka, http://eureka3:8761/eureka
   eureka3:
     image: mindaugasjasiunas/eureka
     container_name: eureka-3
     ports:
-      - 8763:8763
+      - 8763:8761
     restart: always
     environment:
       spring.application.name: eureka-service
-      server.port: 8763
+      server.port: 8761
       eureka.instance.hostname: eureka3
-      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8762/eureka, http://eureka3:8763/eureka
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8761/eureka, http://eureka3:8761/eureka
+
+  api-gateway:
+    image: mindaugasjasiunas/cloud-api-gateway
+    container_name: cloud-api-gateway
+    ports:
+      - 9090:9090
+    environment:
+      spring.application.name: 'gateway'
+      server.port: 9090
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8761/eureka, http://eureka3:8761/eureka
+      # trace gateway logs
+      logging.level.org.springframework.cloud.gateway: debug
+      logging.level.reactor.netty.http.client: debug
+      # Spring Boot Actuator
+      management.endpoint.gateway.enabled: true # default value
+      management.endpoints.web.exposure.include: gateway
+      # Gateway
+      spring.cloud.gateway.discovery.locator.enabled: false # turn-off automatic locator
+      spring.cloud.gateway.discovery.locator.lower-case-service-id: true
+      spring.cloud.gateway.default-filters: DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin # for all routes # remove duplicate values of Access-Control-Allow-Credentials and Access-Control-Allow-Origin response headers in cases when both the gateway CORS logic and the downstream add them.
+      # Define routes (overrides ALL if any provided in gateway properties)
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_ID: books-service-get-books
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_PREDICATES[0]: Path=/api/v1/books
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_PREDICATES[1]: Method=GET
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_ID: books-service-get-book
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_PREDICATES[0]: Path=/api/v1/books/**
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_PREDICATES[1]: Method=GET
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_ID: books-service-create-book
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_PREDICATES[0]: Path=/api/v1/books
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_PREDICATES[1]: Method=POST
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[3]_ID: books-service-update-book
+      SPRING_CLOUD_GATEWAY_ROUTES[3]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[3]_PREDICATES[0]: Path=/api/v1/books/**
+      SPRING_CLOUD_GATEWAY_ROUTES[3]_PREDICATES[1]: Method=PUT
+      SPRING_CLOUD_GATEWAY_ROUTES[3]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[3]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[4]_ID: books-service-partially-update-book
+      SPRING_CLOUD_GATEWAY_ROUTES[4]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[4]_PREDICATES[0]: Path=/api/v1/books/**
+      SPRING_CLOUD_GATEWAY_ROUTES[4]_PREDICATES[1]: Method=PATCH
+      SPRING_CLOUD_GATEWAY_ROUTES[4]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[4]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[5]_ID: books-service-update-book
+      SPRING_CLOUD_GATEWAY_ROUTES[5]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[5]_PREDICATES[0]: Path=/api/v1/books/**
+      SPRING_CLOUD_GATEWAY_ROUTES[5]_PREDICATES[1]: Method=DELETE
+      SPRING_CLOUD_GATEWAY_ROUTES[5]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[5]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[6]_ID: users-service-login
+      SPRING_CLOUD_GATEWAY_ROUTES[6]_URI: lb://users-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[6]_PREDICATES[0]: Path=/login
+      SPRING_CLOUD_GATEWAY_ROUTES[6]_PREDICATES[1]: Method=POST
+      SPRING_CLOUD_GATEWAY_ROUTES[6]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[7]_ID: users-service-register
+      SPRING_CLOUD_GATEWAY_ROUTES[7]_URI: lb://users-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[7]_PREDICATES[0]: Path=/register
+      SPRING_CLOUD_GATEWAY_ROUTES[7]_PREDICATES[1]: Method=POST
+      SPRING_CLOUD_GATEWAY_ROUTES[7]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[8]_ID: users-service-reset-access-token
+      SPRING_CLOUD_GATEWAY_ROUTES[8]_URI: lb://users-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[8]_PREDICATES[0]: Path=/resettoken
+      SPRING_CLOUD_GATEWAY_ROUTES[8]_PREDICATES[1]: Method=POST
+      SPRING_CLOUD_GATEWAY_ROUTES[8]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[9]_ID: books-service-get-my-books
+      SPRING_CLOUD_GATEWAY_ROUTES[9]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[9]_PREDICATES[0]: Path=/api/v1/my-books
+      SPRING_CLOUD_GATEWAY_ROUTES[9]_PREDICATES[1]: Method=GET
+      SPRING_CLOUD_GATEWAY_ROUTES[9]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[9]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[10]_ID: books-service-get-wishlist
+      SPRING_CLOUD_GATEWAY_ROUTES[10]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[10]_PREDICATES[0]: Path=/api/v1/wishlist
+      SPRING_CLOUD_GATEWAY_ROUTES[10]_PREDICATES[1]: Method=GET
+      SPRING_CLOUD_GATEWAY_ROUTES[10]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[10]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[11]_ID: books-service-add-to-my-books
+      SPRING_CLOUD_GATEWAY_ROUTES[11]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[11]_PREDICATES[0]: Path=/api/v1/my-books/**
+      SPRING_CLOUD_GATEWAY_ROUTES[11]_PREDICATES[1]: Method=POST
+      SPRING_CLOUD_GATEWAY_ROUTES[11]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[11]_FILTERS[0]: RemoveRequestHeader=Cookie
+      
+      SPRING_CLOUD_GATEWAY_ROUTES[12]_ID: books-service-add-to-wishlist
+      SPRING_CLOUD_GATEWAY_ROUTES[12]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[12]_PREDICATES[0]: Path=/api/v1/wishlist/**
+      SPRING_CLOUD_GATEWAY_ROUTES[12]_PREDICATES[1]: Method=POST
+      SPRING_CLOUD_GATEWAY_ROUTES[12]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[12]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[13]_ID: books-service-remove-from-my-books
+      SPRING_CLOUD_GATEWAY_ROUTES[13]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[13]_PREDICATES[0]: Path=/api/v1/my-books/**
+      SPRING_CLOUD_GATEWAY_ROUTES[13]_PREDICATES[1]: Method=DELETE
+      SPRING_CLOUD_GATEWAY_ROUTES[13]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[13]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      SPRING_CLOUD_GATEWAY_ROUTES[14]_ID: books-service-delete-from-wishlist
+      SPRING_CLOUD_GATEWAY_ROUTES[14]_URI: lb://books-service/
+      SPRING_CLOUD_GATEWAY_ROUTES[14]_PREDICATES[0]: Path=/api/v1/wishlist/**
+      SPRING_CLOUD_GATEWAY_ROUTES[14]_PREDICATES[1]: Method=DELETE
+      SPRING_CLOUD_GATEWAY_ROUTES[14]_PREDICATES[2]: Header=Authorization, Bearer (.*)
+      SPRING_CLOUD_GATEWAY_ROUTES[14]_FILTERS[0]: RemoveRequestHeader=Cookie
+      
+    restart: always
+    depends_on:
+      - eureka1
+      - eureka2
+      - eureka3
+
+  books:
+    image: mindaugasjasiunas/books-service
+    container_name: books-backend-service
+    restart: always
+    environment:
+      spring.application.name: 'books-service'
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8761/eureka, http://eureka3:8761/eureka
+      eureka.instance.prefer-ip-address: true # for API Gateway
+      spring.data.mongodb.auto-index-creation: true
+      # should be kept as secrets - externalize to environment variables!
+      spring.data.mongodb.uri: mongodb://root:rootroot@mongoDB:27017/books-mongodb?authSource=admin&retryWrites=true&w=majority
+      spring.data.mongodb.authentication-database: admin
+      spring.data.mongodb.database: booksdb
+      spring.data.mongodb.username: root
+      spring.data.mongodb.password: rootroot
+      jwt.secretKey: "SuperLongAndVerySecureKey-[].~^+$$&4"
+    depends_on:
+      - mongoDB
+
+  users:
+    image: mindaugasjasiunas/users-service
+    container_name: users-backend-service
+    restart: always
+    environment:
+      spring.application.name: 'users-service'
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8761/eureka, http://eureka3:8761/eureka
+      eureka.instance.prefer-ip-address: true # for API Gateway
+      spring.data.mongodb.auto-index-creation: true
+      # should be kept as secrets - externalize to environment variables!
+      spring.data.mongodb.uri: mongodb://root:rootroot@mongoDB:27017/books-mongodb?authSource=admin&retryWrites=true&w=majority
+      spring.data.mongodb.authentication-database: admin
+      spring.data.mongodb.database: booksdb
+      spring.data.mongodb.username: root
+      spring.data.mongodb.password: rootroot
+      jwt.secretKey: "SuperLongAndVerySecureKey-[].~^+$$&4"
+      jwt.refreshTokenExpirationAfterMilliseconds: 86400000 # 1 day
+      jwt.accessTokenExpirationAfterMilliseconds: 420000 # 7 minutes
+    depends_on:
+      - mongoDB
+
+  

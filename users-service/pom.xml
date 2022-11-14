@@ -16,8 +16,13 @@
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2021.0.4</spring-cloud.version>
-
         <auth0.java-jwt.version>3.19.2</auth0.java-jwt.version>
+        <io.fabric8.docker-maven-plugin.version>0.33.0</io.fabric8.docker-maven-plugin.version>
+
+        <!-- set this to your docker acc name -->
+        <docker.image.prefix>mindaugasjasiunas</docker.image.prefix>
+        <!-- set to name of project -->
+        <docker.image.name>${project.artifactId}</docker.image.name>
     </properties>
     <dependencies>
         <dependency>
@@ -95,6 +100,40 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <!-- Configure Spring Boot for layered jars -->
+                    <layers>
+                        <enabled>true</enabled>
+                        <includeLayerTools>true</includeLayerTools>
+                    </layers>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${io.fabric8.docker-maven-plugin.version}</version>
+                <configuration>
+                    <!-- should auto-detect it -->
+                    <!-- <dockerHost>http://127.0.0.1:2375</dockerHost> for Windows -->
+                    <!-- <dockerHost>unix:///var/run/docker.sock</dockerHost> for UNIX -->
+                    <verbose>true</verbose>
+                    <images>
+                        <image>
+                            <name>${docker.image.prefix}/${docker.image.name}</name>
+                            <alias>${project.artifactId}</alias>
+                            <build>
+                                <!-- copies artifact to docker build dir in target -->
+                                <assembly>
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                                <dockerFile>Dockerfile</dockerFile>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                            </build>
+                        </image>
+                    </images>
                 </configuration>
             </plugin>
         </plugins>
