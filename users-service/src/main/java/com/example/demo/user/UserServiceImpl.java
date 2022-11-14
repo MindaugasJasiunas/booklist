@@ -2,7 +2,6 @@ package com.example.demo.user;
 
 import com.example.demo.authority.Authority;
 import com.example.demo.role.Role;
-//import com.example.demo.role.RoleRepository;
 import com.example.demo.requests.AuthRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -36,12 +35,6 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
         return userMono
                 .filterWhen(this::userNotExistsInDBByEmail)
                 .switchIfEmpty(Mono.error(() -> new RuntimeException("User with provided email already exists")))
-//                .zipWith(roleRepository.findById(user.getRoleId()))
-//                .switchIfEmpty(Mono.error(() -> new RuntimeException("Role provided does not exist")))
-//                .map(tuple -> {
-//                    tuple.getT1().setRoleId(tuple.getT2().getId());
-//                    return tuple.getT1();
-//                })
                 .map(userToSave -> {
                     userToSave.setPublicId(UUID.randomUUID());
                     userToSave.setPassword(passwordEncoder.encode(userToSave.getPassword()));
@@ -54,7 +47,6 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
                     return userToSave;
                 })
                 .flatMap(userRepository::save)
-//                .flatMap(this::populateUserWithRolesAndAuthorities)
                 .switchIfEmpty(Mono.error(() -> new RuntimeException("User with provided username already exists")) );
     }
 

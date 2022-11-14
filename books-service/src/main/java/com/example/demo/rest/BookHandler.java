@@ -30,6 +30,8 @@ public class BookHandler {
     private final JwtTokenProvider jwtTokenProvider;
 
     public Mono<ServerResponse> getBookByISBN(ServerRequest request){
+        log.debug("[BookHandler] getBookByISBN("+request.pathVariable("ISBN")+")");
+
         String isbn = request.pathVariable("ISBN");
         return service.getBook(isbn)
                 .flatMap(book -> ServerResponse.ok().bodyValue(book))
@@ -56,17 +58,18 @@ public class BookHandler {
         }
 
         if(request.queryParam("search").isPresent()){
-            log.debug("[BookHandler] getBooks(page="+page+", size="+size+", sort="+sortFieldName+", search="+request.queryParam("search").get()+") called");
-            return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromPublisher(service.getBooks(PageRequest.of(page, size).withSort(Sort.by(sortFieldName).descending()), request.queryParam("search").get()), new ParameterizedTypeReference<Page<Book>>(){}));
+            String searchText = request.queryParam("search").get();
+            log.debug("[BookHandler] getBooks(page="+page+", size="+size+", sortField="+sortFieldName+", search="+searchText+")");
+            return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromPublisher(service.getBooks(PageRequest.of(page, size).withSort(Sort.by(sortFieldName).descending()), searchText), new ParameterizedTypeReference<Page<Book>>(){}));
         }
-
-        log.debug("[BookHandler] getBooks(page="+page+", size="+size+", sort="+sortFieldName+") called");
+        log.debug("[BookHandler] getBooks(page="+page+", size="+size+", sortField="+sortFieldName+")");
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromPublisher(service.getBooks(PageRequest.of(page, size).withSort(Sort.by(sortFieldName).descending())), new ParameterizedTypeReference<Page<Book>>(){}));
     }
 
 
 
     public Mono<ServerResponse> createBook(ServerRequest request){
+        log.debug("[BookHandler] createBook()");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:create")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         return request.bodyToMono(Book.class)
@@ -75,12 +78,17 @@ public class BookHandler {
                     return book;
                 })
                 .flatMap(service::createBook)
+                .map(book -> {
+                    log.debug("[BookHandler] createBook(): createdBook URI: http://localhost:9090/api/v1/books/" + book.getISBN());
+                    return book;
+                })
                 .flatMap(createdBook -> ServerResponse.created(URI.create("http://localhost:9090/api/v1/books/" + createdBook.getISBN())).build())
                 .switchIfEmpty(ServerResponse.badRequest().build())
                 .onErrorResume(throwable -> Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage())));
     }
 
     public Mono<ServerResponse> updateBookByISBN(ServerRequest request){
+        log.debug("[BookHandler] updateBookByISBN("+request.pathVariable("ISBN")+")");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:update")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String isbn = request.pathVariable("ISBN");
@@ -93,6 +101,7 @@ public class BookHandler {
     }
 
     public Mono<ServerResponse> patchBookByISBN(ServerRequest request){
+        log.debug("[BookHandler] patchBookByISBN("+request.pathVariable("ISBN")+")");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:update")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String isbn = request.pathVariable("ISBN");
@@ -105,6 +114,7 @@ public class BookHandler {
     }
 
     public Mono<ServerResponse> deleteBookByISBN(ServerRequest request){
+        log.debug("[BookHandler] deleteBookByISBN("+request.pathVariable("ISBN")+")");
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:delete")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String isbn = request.pathVariable("ISBN");
