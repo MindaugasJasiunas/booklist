@@ -7,6 +7,7 @@ services:
       - 27017:27017
     restart: always
     environment:
+      # should be kept as secrets - externalize to environment variables!
       MONGO_INITDB_DATABASE: booksdb
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootroot
@@ -170,3 +171,26 @@ services:
       - eureka1
       - eureka2
       - eureka3
+
+  books:
+    image: mindaugasjasiunas/books-service
+    container_name: books-backend-service
+    # ports:
+      # - 8761:8761
+    restart: always
+    environment:
+      spring.application.name: 'books-service'
+      # server.port: 8761
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8761/eureka, http://eureka3:8761/eureka
+      spring.data.mongodb.auto-index-creation: true
+      # should be kept as secrets - externalize to environment variables!
+      spring.data.mongodb.uri: mongodb://root:rootroot@mongoDB:27017/books-mongodb?authSource=admin&retryWrites=true&w=majority
+      spring.data.mongodb.authentication-database: admin
+      spring.data.mongodb.database: booksdb
+      spring.data.mongodb.username: root
+      spring.data.mongodb.password: rootroot
+      jwt.secretKey: "SuperLongAndVerySecureKey-[].~^+$$&4"
+    depends_on:
+      - mongoDB
+
+  
