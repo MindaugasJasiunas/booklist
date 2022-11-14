@@ -175,13 +175,11 @@ services:
   books:
     image: mindaugasjasiunas/books-service
     container_name: books-backend-service
-    # ports:
-      # - 8761:8761
     restart: always
     environment:
       spring.application.name: 'books-service'
-      # server.port: 8761
       eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8761/eureka, http://eureka3:8761/eureka
+      eureka.instance.prefer-ip-address: true # for API Gateway
       spring.data.mongodb.auto-index-creation: true
       # should be kept as secrets - externalize to environment variables!
       spring.data.mongodb.uri: mongodb://root:rootroot@mongoDB:27017/books-mongodb?authSource=admin&retryWrites=true&w=majority
@@ -190,6 +188,27 @@ services:
       spring.data.mongodb.username: root
       spring.data.mongodb.password: rootroot
       jwt.secretKey: "SuperLongAndVerySecureKey-[].~^+$$&4"
+    depends_on:
+      - mongoDB
+
+  users:
+    image: mindaugasjasiunas/users-service
+    container_name: users-backend-service
+    restart: always
+    environment:
+      spring.application.name: 'users-service'
+      eureka.client.service-url.defaultZone: http://eureka1:8761/eureka, http://eureka2:8761/eureka, http://eureka3:8761/eureka
+      eureka.instance.prefer-ip-address: true # for API Gateway
+      spring.data.mongodb.auto-index-creation: true
+      # should be kept as secrets - externalize to environment variables!
+      spring.data.mongodb.uri: mongodb://root:rootroot@mongoDB:27017/books-mongodb?authSource=admin&retryWrites=true&w=majority
+      spring.data.mongodb.authentication-database: admin
+      spring.data.mongodb.database: booksdb
+      spring.data.mongodb.username: root
+      spring.data.mongodb.password: rootroot
+      jwt.secretKey: "SuperLongAndVerySecureKey-[].~^+$$&4"
+      jwt.refreshTokenExpirationAfterMilliseconds: 86400000 # 1 day
+      jwt.accessTokenExpirationAfterMilliseconds: 420000 # 7 minutes
     depends_on:
       - mongoDB
 
