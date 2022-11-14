@@ -73,6 +73,10 @@ public class BookHandler {
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:create")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         return request.bodyToMono(Book.class)
+                .map(book -> {
+                    log.debug("[BookHandler] createBook("+book+") called");
+                    return book;
+                })
                 .flatMap(service::createBook)
                 .map(book -> {
                     log.debug("[BookHandler] createBook(): createdBook URI: http://localhost:9090/api/v1/books/" + book.getISBN());
@@ -88,6 +92,7 @@ public class BookHandler {
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:update")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String isbn = request.pathVariable("ISBN");
+        log.debug("[BookHandler] updateBookByISBN("+isbn+") called");
         return request.bodyToMono(Book.class)
                 .flatMap(bookToSave -> service.updateBook(bookToSave, isbn))
                 .flatMap(savedBook -> ServerResponse.noContent().build())
@@ -100,6 +105,7 @@ public class BookHandler {
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:update")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String isbn = request.pathVariable("ISBN");
+        log.debug("[BookHandler] patchBookByISBN("+isbn+") called");
         return request.bodyToMono(Book.class)
                 .flatMap(bookToSave -> service.patchBook(bookToSave, isbn))
                 .flatMap(savedUser -> ServerResponse.noContent().build())
@@ -112,6 +118,7 @@ public class BookHandler {
         if(!jwtTokenProvider.authorizationHeaderHasAuthority(request.headers().firstHeader(HttpHeaders.AUTHORIZATION), "book:delete")) return ServerResponse.status(HttpStatus.FORBIDDEN).build();
 
         String isbn = request.pathVariable("ISBN");
+        log.debug("[BookHandler] deleteBookByISBN("+isbn+") called");
         return service.deleteBook(isbn)
                 .flatMap(unused -> ServerResponse.noContent().build())
                 .switchIfEmpty(ServerResponse.noContent().build());
