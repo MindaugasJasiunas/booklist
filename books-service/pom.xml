@@ -65,6 +65,13 @@
             <version>${auth0.java-jwt.version}</version>
         </dependency>
 
+        <!-- for custom logging - for Logstash Encoder -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>7.2</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
