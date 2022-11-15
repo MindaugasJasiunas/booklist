@@ -5,6 +5,9 @@
     "ng": "ng",
     "start": "ng serve --project=shell-app",
     "build": "ng build",
+    "build:shell-app": "ng build --project=shell-app",
+    "build:books-app": "ng build --project=books-app",
+    "build:all-apps": "ng build --project=shell-app && ng build --project=books-app",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"

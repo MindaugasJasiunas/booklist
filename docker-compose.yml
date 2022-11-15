@@ -165,6 +165,13 @@ services:
       SPRING_CLOUD_GATEWAY_ROUTES[14]_PREDICATES[1]: Method=DELETE
       SPRING_CLOUD_GATEWAY_ROUTES[14]_PREDICATES[2]: Header=Authorization, Bearer (.*)
       SPRING_CLOUD_GATEWAY_ROUTES[14]_FILTERS[0]: RemoveRequestHeader=Cookie
+
+      # only way to get rid of 'has been blocked by CORS policy' error - added header in interceptor doesn't work, proxy in production doesn't work too
+      SPRING_CLOUD_GATEWAY_ROUTES[15]_ID: remote-entry-with-CORS
+      SPRING_CLOUD_GATEWAY_ROUTES[15]_URI: http://172.17.0.1:4202/**
+      SPRING_CLOUD_GATEWAY_ROUTES[15]_PREDICATES[0]: Path=/**
+      SPRING_CLOUD_GATEWAY_ROUTES[15]_PREDICATES[1]: Method=GET
+      SPRING_CLOUD_GATEWAY_ROUTES[15]_FILTERS[0]: RemoveRequestHeader=Cookie
       
     restart: always
     depends_on:
@@ -212,4 +219,30 @@ services:
     depends_on:
       - mongoDB
 
-  
+  shell-app-frontend:
+    image: mindaugasjasiunas/shell-app
+    container_name: shell-app
+    ports:
+      - 4201:80
+    environment:
+      # LOGIN_URL: http://api-gateway:9090/login # net::ERR_NAME_NOT_RESOLVED
+      # LOGIN_URL: http://docker.host.internal:9090/login # net::ERR_NAME_NOT_RESOLVED
+      LOGIN_URL: http://172.17.0.1:9090/login
+      REGISTER_URL: http://172.17.0.1:9090/register
+      RESET_ACCESS_TOKEN_URL: http://172.17.0.1:9090/resettoken
+      GET_BOOK_URL: http://localhost:9090/api/v1/books
+      GET_BOOKS_URL: http://localhost:9090/api/v1/books/
+      SEARCH_BOOKS_URL: http://localhost:9090/api/v1/books?search=
+      # BOOKS_REMOTE_ENTRY_URL: http://172.17.0.1:4202/remoteEntry.js
+      BOOKS_REMOTE_ENTRY_URL: http://172.17.0.1:9090/remoteEntry.js
+
+  books-app-frontend:
+    image: mindaugasjasiunas/books-app
+    container_name: books-app
+    ports:
+      - 4202:80
+    environment:
+      BOOKS_URL: http://172.17.0.1:9090/api/v1/books/
+      SEARCH_BOOKS_URL: http://172.17.0.1:9090/api/v1/books?search=
+      MY_BOOKS_URL: http://172.17.0.1:9090/api/v1/my-books/
+      WISHLIST_URL: http://172.17.0.1:9090/api/v1/wishlist/
