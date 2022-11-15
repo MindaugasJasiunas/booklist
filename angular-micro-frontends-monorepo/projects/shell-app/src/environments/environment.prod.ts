@@ -6,4 +6,5 @@ export const environment = {
   getBookUrl: 'http://localhost:9090/api/v1/books',
   getBooksUrl: 'http://localhost:9090/api/v1/books/',// + ISBN
   searchBooksUrl: 'http://localhost:9090/api/v1/books?search=',
+  booksRemoteEntry: 'http://localhost:4202/remoteEntry.js',
 };
