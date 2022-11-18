@@ -53,4 +53,10 @@ fdescribe('BookViewComponent', () => {
     expect(addToWishlistSpy).toHaveBeenCalled();
     expect(removeFromWishlistSpy).toHaveBeenCalled();
   });
+
+  it('should show default text if no book', () => {
+    component.book$ = of(undefined);
+    fixture.detectChanges();
+    expect(fixture.debugElement.nativeElement.querySelector('h3').innerText).toBe('Oops... There is no book');
+  })
 });
