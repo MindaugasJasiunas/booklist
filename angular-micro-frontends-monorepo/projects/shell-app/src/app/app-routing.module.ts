@@ -5,6 +5,7 @@ import { loadRemoteModule } from '@angular-architects/module-federation';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
+import { environment } from '../environments/environment';
 
 const routes: Routes = [
   { component: LoginComponent, path: 'login' },
@@ -14,7 +15,7 @@ const routes: Routes = [
     loadChildren: () =>
       loadRemoteModule({
         type: 'module',
-        remoteEntry: 'http://localhost:4202/remoteEntry.js',
+        remoteEntry: environment.booksRemoteEntry,
         exposedModule: './books.module',
       })
         .then((m) => m.BooksModule)

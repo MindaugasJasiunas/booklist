@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
 import { Book } from 'projects/books-app/src/model/book.model';
-import { filter, map, Observable, switchMap, tap } from 'rxjs';
-import { BookService } from '../../book.service';
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
