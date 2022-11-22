@@ -241,9 +241,18 @@ class BookHandlerTest {
     @Test
     void patchBookByISBNUnauthorized() {}
 
-    @Disabled
     @Test
     void deleteBookByISBN() {
+        String isbn = "123456789";
+        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        Mockito.when(bookRepository.findByISBN(books.get(0).getISBN())).thenReturn(Mono.just(books.get(0)));
+        Mockito.when(bookRepository.deleteByISBN(stringArgumentCaptor.capture())).thenReturn(Mono.empty().then());
+
+        webClient.delete().uri("/api/v1/books/{ISBN}", isbn)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer "+helperClass.generateJWTTokenWithAuthorities("book:delete"))
+                .exchange()
+                .expectStatus().isNoContent();
     }
     @Disabled
     @Test
