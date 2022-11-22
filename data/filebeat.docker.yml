@@ -1,0 +1,35 @@
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      #          labels.dedot: true
+      templates:
+        - condition:
+            contains:
+              container.labels.collect_logs_with_filebeat: "true"
+          config:
+            - type: container
+              format: docker
+              paths:
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
+              processors:
+                - decode_json_fields:
+                    when.equals:
+                      docker.container.labels.decode_log_event_to_json_object: "true"
+                    fields: ["message"]
+                    target: ""
+                    overwrite_keys: true
+
+output.redis:
+  # The Redis hosts
+  hosts: ["redis-cache:6379"]
+  index: "redis.index.for.logstash"
+  key: "filebeat.to.redis"  #If you don't designate a specific key, this will default to the specified index
+  keys:
+    - key: "error"
+      when.contains:
+        message: "ERR"
+    - key: "access"
+      when.contains:
+        message: "\"GET .*\" 200"
+
+logging.metrics.enabled: false

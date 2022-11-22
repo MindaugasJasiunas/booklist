@@ -197,6 +197,10 @@ services:
       jwt.secretKey: "SuperLongAndVerySecureKey-[].~^+$$&4"
     depends_on:
       - mongoDB
+    # pull logs from this docker container
+    labels:
+      collect_logs_with_filebeat: 'true'
+      decode_log_event_to_json_object: 'true'
 
   users:
     image: mindaugasjasiunas/users-service
@@ -218,6 +222,10 @@ services:
       jwt.accessTokenExpirationAfterMilliseconds: 420000 # 7 minutes
     depends_on:
       - mongoDB
+    # pull logs from this docker container
+    labels:
+      collect_logs_with_filebeat: 'true'
+      decode_log_event_to_json_object: 'true'
 
   shell-app-frontend:
     image: mindaugasjasiunas/shell-app
@@ -245,4 +253,88 @@ services:
       BOOKS_URL: http://172.17.0.1:9090/api/v1/books/
       SEARCH_BOOKS_URL: http://172.17.0.1:9090/api/v1/books?search=
       MY_BOOKS_URL: http://172.17.0.1:9090/api/v1/my-books/
-      WISHLIST_URL: http://172.17.0.1:9090/api/v1/wishlist/
+      WISHLIST_URL: http://172.17.0.1:9090/api/v1/wishlist/ 
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - data01:/usr/share/elasticsearch/data #  The volume mount ensures that elasticsearch data is persisted across container restarts.
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - elastic
+
+  redis-cache: # buffer
+    image: redis:6.2
+    container_name: redis-cache
+#    ports:
+#      - 6379:6379
+    networks:
+      - elastic # make sure on the same network as ELK stack - otherwise error connecting redis-cache:6379
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.4.0
+    container_name: logstash
+    ports:
+      - 9600:9600
+      - 12201:12201/udp
+    environment:
+      - logger.level = DEBUG
+      - ELASTICSEARCH_HOSTS = http://elasticsearch:9200
+      - LS_JAVA_OPTS = "-Xmx256m -Xms256m"
+    volumes:
+      - ./data/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro # overrides 'main' pipeline config file with our config file
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.4.0
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS = http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
+  filebeat: # reads docker containers logs
+    container_name: filebeat
+    image:
+      docker.elastic.co/beats/filebeat:7.7.0
+    volumes:
+      - ./data/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro # Configuration file (:ro - read only mount)
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro           # Docker logs
+      - /var/run/docker.sock:/var/run/docker.sock:ro                       # Additional information about containers
+    user: root                                                             # Allow access to log files and docker.sock
+    restart: on-failure
+    networks:
+      - elastic
+
+  
+volumes:
+  data01:
+    driver: local
+networks:
+  elastic:
+    driver: bridge
