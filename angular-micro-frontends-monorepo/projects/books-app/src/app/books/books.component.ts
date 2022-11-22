@@ -33,6 +33,7 @@ export class BooksComponent {
 
     if(router.url.includes('/books/book/')) {
       this.booksView = false;
+      this.type = 'book';
       this.book$ = route.params.pipe(
         filter((param: Params) => param['ISBN']),
         map((param: Params) => param['ISBN']),
@@ -140,6 +141,7 @@ export class BooksComponent {
 
   get titleText(): BookPageTitle{
     switch(this.type){
+      case 'book': return 'Book';
       case 'books': return 'Books';
       case 'books-search': return 'Search Books';
       case 'my-books': return 'My Books';
@@ -157,6 +159,6 @@ export class BooksComponent {
 
 }
 
-export type BookPageTitle = 'Books' | 'Search Books' | 'My Books' | 'My Wishlist';
-export type BookType = 'books' | 'books-search' | 'my-books' | 'wishlist';
+export type BookPageTitle = 'Book' | 'Books' | 'Search Books' | 'My Books' | 'My Wishlist';
+export type BookType = 'book' | 'books' | 'books-search' | 'my-books' | 'wishlist';
 export type NoBookResultText = 'Sorry there is no books matching your search criteria' | 'Sorry there is no books';

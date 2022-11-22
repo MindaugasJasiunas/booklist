@@ -30,7 +30,7 @@ public class BooksServiceApplication {
     @Bean
     CommandLineRunner saveFromJSONToDB(BookRepository repo) {
         return args -> {
-            if(repo.count().block() > 1) return;
+            if(repo!=null || repo.count().block() > 1) return;
             ObjectMapper mapper = new ObjectMapper();
             File file = ResourceUtils.getFile("classpath:books.json");
             Book[] books = mapper.readValue(file, Book[].class);

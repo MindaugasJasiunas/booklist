@@ -34,8 +34,8 @@ export class BookService {
       retry(5),
       tap(response => this.totalBooks.next((response as BooksResponse).totalElements)), // side effect to set total books
       map(response => (response as BooksResponse).content),
-      map((content: []) => content.map(obj => { // map each element & return array to other map
-        const bookResponse = obj as BookResponse;
+      map((content: BookResponse[]) => content.map(bookResponse => { // map each element & return array to other map
+        // const bookResponse = obj as BookResponse;
         return new Book(undefined, bookResponse.author, bookResponse.title, bookResponse.isbn, bookResponse.pages, bookResponse.hardTop, bookResponse.ebook, bookResponse.imageUrl);
       })),
       map((books: Book[]) => {
@@ -50,8 +50,8 @@ export class BookService {
     return this.http.get(this.searchBooksUrl+searchText, {params:{page:page, size:size}}).pipe(
       tap(response => this.totalBooks.next((response as BooksResponse).totalElements)), // side effect to set total books
       map(response => (response as BooksResponse).content),
-      map((content: []) => content.map(obj => {
-        const bookResponse = obj as BookResponse;
+      map((content: BookResponse[]) => content.map(bookResponse => {
+        // const bookResponse = obj as BookResponse;
         return new Book(undefined, bookResponse.author, bookResponse.title, bookResponse.isbn, bookResponse.pages, bookResponse.hardTop, bookResponse.ebook, bookResponse.imageUrl);
       }))
     );
@@ -63,8 +63,8 @@ export class BookService {
     return this.http.get(this.myBooksUrl, {params:{page:page, size:size}}).pipe(
       tap(response => this.totalBooks.next((response as BooksResponse).totalElements)), // side effect to set total books
       map(response => (response as BooksResponse).content),
-      map((content: [])=> content.map(obj => {
-        const bookResponse = obj as BookResponse;
+      map((content: BookResponse[])=> content.map(bookResponse => {
+        // const bookResponse = obj as BookResponse;
         return new Book(undefined, bookResponse.author, bookResponse.title, bookResponse.isbn, bookResponse.pages, bookResponse.hardTop, bookResponse.ebook, bookResponse.imageUrl);
       }))
     );
@@ -76,8 +76,8 @@ export class BookService {
     return this.http.get(this.wishlistUrl, {params:{page:page, size:size}}).pipe(
       tap(response => this.totalBooks.next((response as BooksResponse).totalElements)), // side effect to set total books
       map(response => (response as BooksResponse).content),
-      map((content: [])=> content.map(obj => {
-        const bookResponse = obj as BookResponse;
+      map((content: BookResponse[])=> content.map(bookResponse => {
+        // const bookResponse = obj as BookResponse;
         return new Book(undefined, bookResponse.author, bookResponse.title, bookResponse.isbn, bookResponse.pages, bookResponse.hardTop, bookResponse.ebook, bookResponse.imageUrl);
       }))
     );
@@ -132,7 +132,7 @@ export type BookResponse = {
 }
 
 export type BooksResponse= {
-  content: [],
+  content: BookResponse[],
   empty: boolean,
   first: boolean,
   last: boolean,
